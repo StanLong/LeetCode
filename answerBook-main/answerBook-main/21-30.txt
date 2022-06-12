@@ -1,0 +1,703 @@
+
+21、火星文计算
+已知火星人使用的运算符为#、$，其与地球人的等价公式如下： 
+x#y = 2*x+3*y+4 
+x$y = 3*x+y+2 
+1、其中x、y是无符号整数 
+2、地球人公式按C语言规则计算 
+3、火星人公式中，$的优先级高于#，相同的运算符，按从左到右的顺序计算 
+现有一段火星人的字符串报文，请你来翻译并计算结果。 
+
+输入描述:
+火星人字符串表达式（结尾不带回车换行）
+输入的字符串说明：  字符串为仅由无符号整数和操作符（#、$）组成的计算表达式。例如：123#4$5#67$78。  
+1、用例保证字符串中，操作数与操作符之间没有任何分隔符。  
+2、用例保证操作数取值范围为32位无符号整数。  
+3、保证输入以及计算结果不会出现整型溢出。  
+4、保证输入的字符串为合法的求值报文，例如：123#4$5#67$78  
+5、保证不会出现非法的求值报文，例如类似这样字符串：  
+#4$5 //缺少操作数  
+4$5# //缺少操作数  
+4#$5 //缺少操作数  
+4 $5 //有空格  
+3+4-5*6/7 //有其它操作符  
+12345678987654321$54321 //32位整数计算溢出
+输出描述:
+根据输入的火星人字符串输出计算结果（结尾不带回车换行）
+
+示例1
+输入
+7#6$5#12
+输出
+226
+说明
+示例：  
+7#6$5#12  
+=7#(3*6+5+2)#12  
+=7#25#12  
+=(2*7+3*25+4)#12  
+=93#12  
+=2*93+3*12+4  
+=226  
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        // x#y = 2*x+3*y+4  x$y = 3*x+y+2  $优先级高于#
+        while (sc.hasNextLine()) {
+            String input = sc.nextLine();
+            System.out.print(func(input));
+        }
+        sc.close();
+
+    }
+
+    private static int func (String input) {
+        //优先算最后
+        int index = input.lastIndexOf("#");
+        if (index!= -1) {
+            String left = input.substring(0, index);
+            String right = input.substring(index +1);
+            int res = 2 * func(left) + 3 * func(right) + 4;
+            return res;
+        }
+        // 优先算第一
+        index = input.lastIndexOf("$");
+        if (index != -1) {
+            String left = input.substring(0, index);
+            String right = input.substring(index +1);
+            int res = 3 * func(left) + func(right) + 2;
+            return res;
+        }
+        return Integer.parseInt(input);
+
+    }
+}
+
+22、计算面积
+绘图机器的绘图笔初始位置在原点（0, 0），机器启动后其绘图笔按下面规则绘制直线：
+1）尝试沿着横向坐标轴正向绘制直线，直到给定的终点值E。
+2）期间可通过指令在纵坐标轴方向进行偏移，并同时绘制直线，偏移后按规则1 绘制直线；指令的格式为X offsetY，表示在横坐标X 沿纵坐标方向偏移，offsetY为正数表示正向偏移，为负数表示负向偏移。
+
+给定了横坐标终点值E、以及若干条绘制指令，请计算绘制的直线和横坐标轴、以及 X=E 的直线组成图形的面积。
+
+输入描述:
+首行为两个整数 N E，表示有N条指令，机器运行的横坐标终点值E。
+接下来N行，每行两个整数表示一条绘制指令X offsetY，用例保证横坐标X以递增排序方式出现，且不会出现相同横坐标X。
+取值范围：0 < N <= 10000, 0 <= X <= E <=20000, -10000 <= offsetY <= 10000。
+输出描述:
+一个整数，表示计算得到的面积，用例保证，结果范围在0~4294967295内
+
+示例1：
+输入
+4 10
+1 1
+2 1
+3 1
+4 -2
+输出
+12
+示例2：
+输入
+2 4
+0 1
+2 -2
+输出
+4
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		String[] a1 = sc.nextLine().split(" ");
+		int count = Integer.valueOf(a1[0]);
+		int total = Integer.valueOf(a1[1]);
+		long result = 0;
+		int last_x = 0, last_y = 0;
+		for (int i = 0; i < count; i++) {
+			String[] a2 = sc.nextLine().split(" ");
+			int x = Integer.valueOf(a2[0]);
+			int y = Integer.valueOf(a2[1]);
+			result += (x - last_x) * Math.abs(last_y);;
+			last_x = x;
+			last_y += y;
+		}
+		result += (total - last_x) * Math.abs(last_y);
+		System.out.println(result);
+	}
+}
+
+23、计算最大乘积 乘积最大
+给定一个元素类型为小写字符串的数组，请计算两个没有相同字符的元素 长度乘积的最大值，如果没有符合条件的两个元素，返回0。
+
+输入描述:
+输入为一个半角逗号分隔的小写字符串的数组，2 <= 数组长度<=100，0 < 字符串长度<= 50。
+输出描述:
+两个没有相同字符的元素 长度乘积的最大值。
+
+示例1
+输入
+iwdvpbn,hk,iuop,iikd,kadgpf
+输出
+14
+说明
+数组中有5个元素。
+iwdvpbn与hk无相同的字符，满足条件，iwdvpbn的长度为7，hk的长度为2，乘积为14（7*2）。
+iwdvpbn与iuop、iikd、kadgpf均有相同的字符，不满足条件。
+iuop与iikd、kadgpf均有相同的字符，不满足条件。
+iikd与kadgpf有相同的字符，不满足条件。
+因此，输出为14。
+
+答案：
+解法一：
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int maxValue = -1;
+        String a = in.nextLine();
+        if(a == null) {
+            System.out.println(0);
+        }
+        String[] array = a.split(",");
+        if(array.length == 1){
+            System.out.println(0);
+        }
+        for(int i = 0; i< array.length; i++) {
+            for(int j = i+1; j< array.length; j++) {
+                if(equals(array[i], array[j])){
+                    int a1 = array[i].length();
+                    int b = array[j].length();
+                    maxValue = Math.max(maxValue, a1*b);
+                }
+            }
+        }
+        System.out.println(maxValue == -1? 0 : maxValue);
+
+    }
+    public static boolean equals(String a, String b) {
+        for(int i = 0; i< a.length(); i++) {
+            for(int j = 0; j< b.length(); j++) {
+                if(a.charAt(i) == b.charAt(j)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+
+24、检查是否存在满足条件的数字组合
+给定一个正整数数组，检查数组中是否存在满足规则的数字组合
+
+规则：
+A = B + 2C
+
+输入描述:
+第一行输出数组的元素个数。
+
+接下来一行输出所有数组元素，用空格隔开。
+输出描述:
+如果存在满足要求的数，在同一行里依次输出规则里A/B/C的取值，用空格隔开。
+
+如果不存在，输出0。
+
+示例1：
+输入
+4
+2 7 3 0
+输出
+7 3 2
+说明
+7 = 3 + 2 * 2
+示例2：
+输入
+3
+1 1 1
+输出
+0
+说明
+找不到满足条件的组合
+备注:
+1. 数组长度在3-100之间。
+
+2. 数组成员为0-65535，数组成员可以重复，但每个成员只能在结果算式中使用一次。如：数组成员为[0, 0, 1, 5]，0出现2次是允许的，但结果0 = 0 + 2 * 0是不允许的，因为算式中使用了3个0。
+3. 用例保证每组数字里最多只有一组符合要求的解。
+
+答案：
+解法一：
+import java.util.Scanner;
+public class Main{
+    public static void main(String args[]){
+        Scanner s = new Scanner(System.in);
+        while(s.hasNext()){
+            int length = s.nextInt();
+            int arr[] = new int [length];
+            for(int i=0;i<length;i++){
+                arr[i] = s.nextInt();
+            }
+            sort(arr,0,length-1);
+            int i;
+            boolean end = false;
+            for(i=0;i<length-1;i++){
+                for(int j=0;j<length-1;j++){
+                    if(j==i)
+                        continue;
+                    int sum = arr[i]+arr[j]*2;
+                    if(sum>arr[length-1])
+                        break;
+                    int max = i>j ? i : j;
+                    for(int k=max+1;k<length;k++){
+                        if(sum == arr[k]){
+                            System.out.println(arr[k]+" "+arr[i]+" "+arr[j]);
+                            end = true;
+                            break;
+                        }
+                    }
+                    if(end)
+                        break;
+                }
+                if(end)
+                    break;
+            }
+            if(i==length-1){
+                System.out.println(0);
+        }
+        }
+    }
+    static void sort(int arr[], int left, int right){
+        if(left>=right)
+            return;
+        int sign = arr[left];
+        int l = left;
+        int r = right;
+        while(l<r){
+            while(arr[r]>=sign && l<r)
+                r--;
+            arr[l] = arr[r];
+
+            while(arr[l]<=sign && l<r)
+                l++;
+            arr[r] = arr[l];
+
+        }
+        arr[l] = sign;
+        sort(arr,left,r);
+        sort(arr,l+1,right);
+    }
+}
+
+25、矩阵扩散 
+存在一个m*n的二维数组，其成员取值范围为0或1。其中值为1的成员具备扩散性，每经过1S，将上下左右值为0的成员同化为1。二维数组的成员初始值都为0，将第[i,j]和[k,l]两个个位置上元素修改成1后，求矩阵的所有元素变为1需要多长时间。
+
+输入描述:
+输出数据中的前2个数字表示这是一个m*n的矩阵，m和n不会超过1024大小；中间两个数字表示一个初始扩散点位置为i,j；最后2个数字表示另一个扩散点位置为k,l。
+
+输出描述:
+输出矩阵的所有元素变为1所需要秒数。
+
+示例1：
+输入
+4,4,0,0,3,3
+输出
+3
+说明
+输出数据中的前2个数字表示这是一个4*4的矩阵；中间两个数字表示一个初始扩散点位置为0,0；最后2个数字表示另一个扩散点位置为3,3。
+给出的样例是一个很简单模型，初始点在对角线上，达到中间的位置分别为3次迭代，即3秒。所以输出为3。
+
+26、矩阵最大值 
+给定一个仅包含0和1的N*N二维矩阵，请计算二维矩阵的最大值，计算规则如下：
+1、 每行元素按下标顺序组成一个二进制数（下标越大越排在低位），二进制数的值就是该行的值。矩阵各行值之和为矩阵的值。
+2、允许通过向左或向右整体循环移动每行元素来改变各元素在行中的位置。
+      比如： [1,0,1,1,1]向右整体循环移动2位变为[1,1,1,0,1]，二进制数为11101，值为29。
+                  [1,0,1,1,1]向左整体循环移动2位变为[1,1,1,1,0]，二进制数为11110，值为30。
+
+输入描述:
+1、输入的第一行为正整数，记录了N的大小，0 < N <= 20。
+2、输入的第2到N+1行为二维矩阵信息，行内元素边角逗号分隔。
+输出描述:
+矩阵的最大值。
+
+示例1：
+输入
+5
+1,0,0,0,1
+0,0,0,1,1
+0,1,0,1,0
+1,0,0,1,1
+1,0,1,0,1
+输出
+122
+说明
+第一行向右整体循环移动1位，得到本行的最大值[1,1,0,0,0]，二进制值为11000，十进制值为24。
+第二行向右整体循环移动2位，得到本行的最大值[1,1,0,0,0]，二进制值为11000，十进制值为24。
+第三行向左整体循环移动1位，得到本行的最大值[1,0,1,0,0]，二进制值为10100，十进制值为20。
+第四行向右整体循环移动2位，得到本行的最大值[1,1,1,0,0]，二进制值为11100，十进制值为28。
+第五行向右整体循环移动1位，得到本行的最大值[1,1,0,1,0]，二进制值为11010，十进制值为26。
+因此，矩阵的最大值为122。
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Scanner sc = new Scanner(System.in);
+        int count = sc.nextInt();
+        sc.nextLine();
+        String[] m = new String[count];
+        int result = 0;
+        for (int i = 0; i < count; i++) {
+            m[i] = sc.nextLine().replaceAll(",", "");
+            int max = 0;
+            String v = m[i];
+            for (int j = 0; j < v.length(); j++) {
+                if (max < Integer.parseInt(v, 2)) {
+                    max = Integer.parseInt(v, 2);
+                }
+                v = v.substring(1, v.length()) + v.substring(0, 1);
+            }
+            result += max;
+        }
+        System.out.println(result);
+    }
+
+}
+
+27、考勤信息
+公司用一个字符串来表示员工的出勤信息：
+absent：缺勤
+late：迟到
+leaveearly：早退
+present：正常上班
+现需根据员工出勤信息，判断本次是否能获得出勤奖，能获得出勤奖的条件如下：
+缺勤不超过一次；没有连续的迟到/早退；任意连续7次考勤，缺勤/迟到/早退不超过3次
+
+输入描述:
+用户的考勤数据字符串，记录条数 >= 1；输入字符串长度<10000；不存在非法输入
+如：
+2
+present
+present absent present present leaveearly present absent
+输出描述:
+根据考勤数据字符串，如果能得到考勤奖，输出"true"；否则输出"false"，对于输入示例的结果应为：
+true false
+
+示例1：
+输入
+2
+present
+present present
+输出
+true true
+示例2：
+输入
+2
+present
+present absent present present leaveearly present absent
+输出
+true false
+
+答案：
+解法一：
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int cnt;
+        cnt = Integer.parseInt(sc.nextLine());
+        String[] arr = new String[cnt];
+        for (int i = 0; i < cnt; i++) {
+            String s = sc.nextLine();
+            arr[i] = s;
+        }
+        Main myTest = new Main();
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < cnt; i++) {
+            if (arr[i] == null || arr[i].length() == 0)
+                break;
+            String[] split = arr[i].split(" ");
+            int absentCnt = 0;
+
+            int lastLastOrEarly = -1;
+            boolean flag = false;
+            for (int j = 0; j < split.length; j++) {
+
+                if ("absent".equalsIgnoreCase(split[j])) {
+                    absentCnt++;
+                    if (absentCnt >= 2) {
+                        sb.append("false ");
+                        flag = true;
+                        break;
+                    }
+
+                } else if ("late".equalsIgnoreCase(split[j]) || "leaveearly".equalsIgnoreCase(split[j])) {
+                    if (lastLastOrEarly == -1) {
+                        lastLastOrEarly = j;
+                    } else {
+                        if (j - lastLastOrEarly == 1) {
+                            sb.append("false ");
+                            flag = true;
+                            break;
+                        } else
+                            lastLastOrEarly = j;
+                    }
+                }
+
+                boolean b = myTest.judge7C(split, j);
+                if (!b) {
+                    sb.append("false ");
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag)
+                sb.append("true ");
+        }
+        System.out.println(sb.toString().trim());
+    }
+
+    private boolean judge7C(String[] split, int now) {
+        int cnt = 0;
+        if (now < 7) {
+            for (int i = 0; i <= now; i++) {
+                String s = split[i];
+                if ("absent".equals(s) || "late".equals(s) || "leaveearly".equals(s)) {
+                    cnt++;
+                }
+            }
+        } else {
+            for (int i = now - 6; i <= now; i++) {
+                String s = split[i];
+                if ("absent".equals(s) || "late".equals(s) || "leaveearly".equals(s)) {
+                    cnt++;
+                }
+            }
+        }
+        return cnt <= 3;
+    }
+}
+
+28、靠谱的车
+程序员小明打了一辆出租车去上班。出于职业敏感，他注意到这辆出租车的计费表有点问题，总是偏大。
+
+出租车司机解释说他不喜欢数字4，所以改装了计费表，任何数字位置遇到数字4就直接跳过，其余功能都正常。
+
+比如：
+
+1.     23再多一块钱就变为25；
+
+2.     39再多一块钱变为50；
+
+3.     399再多一块钱变为500；
+
+小明识破了司机的伎俩，准备利用自己的学识打败司机的阴谋。
+
+给出计费表的表面读数，返回实际产生的费用。
+
+输入描述:
+只有一行，数字N，表示里程表的读数。
+
+(1<=N<=888888888)。
+
+输出描述:
+一个数字，表示实际产生的费用。以回车结束。
+
+示例1：
+输入
+5
+输出
+4
+说明
+5表示计费表的表面读数。
+4表示实际产生的费用其实只有4块钱。
+示例2：
+输入
+17
+输出
+15
+说明
+17表示计费表的表面读数。
+15表示实际产生的费用其实只有15块钱。
+示例3：
+输入
+100
+输出
+81
+说明
+100表示计费表的表面读数。
+81表示实际产生的费用其实只有81块钱。
+
+答案：
+解法一：
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        int ans = n,temp = 0,k = 0,j = 1;
+        while(n > 0){
+            if (n % 10  > 4){
+                temp  += (n % 10 - 1) * k + j ;
+            }else {
+                temp  += (n % 10) * k;
+            }
+            k = k * 9 + j;
+            j *= 10;
+            n /= 10;
+        }
+        System.out.println(ans - temp);
+    }
+}
+
+29、快递运输
+一辆运送快递的货车，运送的快递均放在大小不等的长方体快递盒中，为了能够装载更多的快递，同时不能让货车超载，需要计算最多能装多少个快递。
+注：快递的体积不受限制，快递数最多1000个，货车载重最大50000。
+
+输入描述:
+第一行输入每个快递的重量，用英文逗号分隔，如：5,10,2,11
+第二行输入货车的载重量，如：20
+不需要考虑异常输入。
+输出描述:
+输出最多能装多少个快递，如：3
+
+示例1：
+输入
+5,10,2,11
+20
+输出
+3
+说明
+货车的载重量为20，最多只能放三个快递5、10、2，因此输出3
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main {
+    public static void main(String args[]) {
+        Scanner input = new Scanner(System.in);
+        String s = input.nextLine(); //快递重量 英文逗号隔开
+        int w = input.nextInt(); //货车载重量
+        String[] split = s.split(",");
+        List list = new LinkedList<Integer>();
+        for (int i=0;i<split.length;i++){
+            list.add(Integer.valueOf(split[i]));
+        }
+        int minNum;
+        int count = 0;
+        while (true){
+            minNum = 100000;
+            //找出最小
+            for (int i=0;i<list.size();i++){
+                if (minNum>(Integer) list.get(i)){
+                    minNum = (Integer) list.get(i);
+                }
+            }
+            list.remove(Integer.valueOf(minNum));
+            if (w-minNum<0){
+                break;
+            }
+            w = w-minNum;
+            count++;
+        }
+        System.out.println(count);
+
+    }
+}
+
+30、连续字母长度
+给定一个字符串，只包含大写字母，求在包含同一字母的子串中，长度第 k 长的子串的长度，相同字母只取最长的那个子串。
+
+输入描述:
+第一行有一个子串(1<长度<=100)，只包含大写字母。
+第二行为 k的值
+输出描述:
+输出连续出现次数第k多的字母的次数。
+
+示例1
+输入
+AAAAHHHBBCDHHHH
+3
+输出
+2
+说明
+同一字母连续出现的最多的是A和H，四次；第二多的是H，3次，但是H已经存在4个连续的，故不考虑；下个最长子串是BB，所以最终答案应该输出2。
+示例2
+输入
+AABAAA
+2
+输出
+1
+说明
+同一字母连续出现的最多的是A，三次；第二多的还是A，两次，但A已经存在最大连续次数三次，故不考虑；下个最长子串是B，所以输出1
+示例3
+输入
+ABC
+4
+输出
+-1
+说明
+只含有3个包含同一字母的子串，小于k，输出-1
+示例4
+输入
+ABC
+2
+输出
+1
+说明
+三个子串长度均为1，所以此时k = 1，k=2，k=3这三种情况均输出1。特此说明，避免歧义。
+备注:
+若子串中只包含同一字母的子串数小于k，则输出-1
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main{
+    public static void main(String[] args){
+        Scanner sc=new Scanner(System.in);
+        while(sc.hasNext()){
+            String s = sc.next();
+            int k=sc.nextInt();
+            char[] cArray=s.toCharArray();
+            Map<Character,Integer> map=new HashMap<>();
+            Set<Character> set=new HashSet<>();
+            map.put(cArray[0],1);
+            for(int i=0;i<cArray.length;i++){
+                int start=i;
+                while(start+1<cArray.length && cArray[start]==cArray[start+1]){
+                    start++;
+                }
+                char c=cArray[i];
+                set.add(c);
+                int time=map.getOrDefault(c,0);
+                if(start-i+1>time){
+                    map.put(c,start-i+1);
+                }
+                i=start;
+            }
+            List<Integer> list=new ArrayList<>();
+            for(Character c:set){
+                list.add(map.get(c));
+            }
+            list.sort((n1,n2)->n2-n1);
+            if(k-1<list.size() && k>0){
+                System.out.println(list.get(k-1));
+            }else{
+                System.out.println(-1);
+            }
+        }
+    }
+}

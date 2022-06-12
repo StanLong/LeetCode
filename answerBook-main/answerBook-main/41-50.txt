@@ -1,0 +1,719 @@
+
+41、求最多可以派出多少支团队
+用数组代表每个人的能力，一个比赛活动要求参赛团队的最低能力值为N，每个团队可以由1人或2人组成，且1个人只能参加1个团队，请计算出最多可以派出多少支符合要求的团队？
+
+输入描述:
+5
+3 1 5 7 9
+8
+第一行数组代表总人数，范围[1,500000]
+第二行数组代表每个人的能力，每个元素的取值范围[1, 500000]，数组的大小范围[1,500000]
+第三行数值为团队要求的最低能力值，范围[1, 500000]
+输出描述:
+3
+最多可以派出的团队数量
+
+示例1
+输入
+5
+3 1 5 7 9
+8
+输出
+3
+说明
+3,5组成一队，1,7组成一队，9自己一个队，故输出3
+
+答案：
+解法一：
+import java.util.*;
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) {
+            nums[i] = in.nextInt();
+        }
+        int tar = in.nextInt();
+        int res = 0;
+
+        Arrays.sort(nums);
+        int left = 0;
+        int right = n-1;
+        while (nums[right]>tar){
+            right--;
+            res++;
+        }
+        while (left<right){
+            //两人团队
+            if (nums[left]+nums[right]>=tar){
+                res++;
+                right--;
+            }
+            left++;
+        }
+        System.out.println(res);
+    }
+}
+
+42、删除字符串中字符最少字符
+删除字符串中出现次数最少的字符，如果有多个字符出现次数一样，则都删除。
+
+输入描述:
+输入abcdd
+字符串中只包含小写英文字母。
+输出描述:
+dd
+
+示例1
+输入
+abcdd
+输出
+dd
+示例2
+输入
+aabbccdd
+输出
+empty
+说明
+如果字符串的字符都被删除，则范围empty
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main {
+
+    public static void main (String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String text = scanner.nextLine();
+        char[] chars = text.toCharArray();
+        Map<Character, Integer> char2times = new HashMap<>(10);
+        for(int i = 0; i < chars.length; i++){
+            if(char2times.containsKey(chars[i])){
+                char2times.replace(chars[i], char2times.get(chars[i]) + 1);
+            }else{
+                char2times.put(chars[i], 1);
+            }
+        }
+        int minTimes = Integer.MAX_VALUE;
+        List<Character> minTimesChars = new ArrayList<>(5);
+        for(Character character : char2times.keySet()){
+            if(char2times.get(character) < minTimes){
+                minTimes = char2times.get(character);
+                minTimesChars.clear();
+                minTimesChars.add(character);
+            }else if(char2times.get(character) == minTimes){
+                minTimesChars.add(character);
+            }
+        }
+        for (Character minTimesChar : minTimesChars) {
+            text = text.replaceAll(minTimesChar.toString(),"");
+        }
+        System.out.println("".equals(text) ? "empty" : text);
+    }
+
+}
+
+43、数据分类
+对一个数据a进行分类，分类方法为：此数据a（四个字节大小）的四个字节相加对一个给定的值b取模，如果得到的结果小于一个给定的值c，则数据a为有效类型，其类型为取模的值；如果得到的结果大于或者等于c，则数据a为无效类型。
+
+比如一个数据a=0x01010101，b=3，按照分类方法计算（0x01+0x01+0x01+0x01）%3=1，所以如果c=2，则此a为有效类型，其类型为1，如果c=1，则此a为无效类型；
+
+又比如一个数据a=0x01010103，b=3，按照分类方法计算（0x01+0x01+0x01+0x03）%3=0，所以如果c=2，则此a为有效类型，其类型为0，如果c=0，则此a为无效类型。
+
+输入12个数据，第一个数据为c，第二个数据为b，剩余10个数据为需要分类的数据，请找到有效类型中包含数据最多的类型，并输出该类型含有多少个数据。
+
+输入描述:
+输入12个数据，用空格分隔，第一个数据为c，第二个数据为b，剩余10个数据为需要分类的数据。
+输出描述:
+输出最多数据的有效类型有多少个数据。
+
+示例1
+输入
+3 4 256 257 258 259 260 261 262 263 264 265
+输出
+3
+说明
+10个数据4个字节相加后的结果分别为1 2 3 4 5 6 7 8 9 10，故对4取模的结果为1 2 3 0 1 2 3 0 1 2，c为3，所以0 1 2都是有效类型，类型为1和2的有3个数据，类型为0的只有2个数据，故输出3
+示例2
+输入
+1 4 256 257 258 259 260 261 262 263 264 265
+输出
+2
+说明
+10个数据4个字节相加后的结果分别为1 2 3 4 5 6 7 8 9 10，故对4取模的结果为1 2 3 0 1 2 3 0 1 2，c为1，所以只有0是有效类型，类型为0的有2个数据，故输出2
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while (sc.hasNext()) {
+            // 取数据
+            int c = sc.nextInt();
+            int b = sc.nextInt();
+            final int size = 10;
+            int[] num = new int[size];
+            for (int i = 0; i < size; i++) {
+                num[i] = sc.nextInt();
+            }
+            // type记录10个数各自的有效类型，无效记录-1
+            int[] type = new int[size];
+            // 计算有效类型
+            for (int i = 0; i < size; i++) {
+                type[i] = getValidType(num[i], b, c);
+                // System.out.print(i + "=" + type[i] + ", ");
+            }
+            // 计算类型最多的数据个数
+            int maxCount = 0;
+            int count = 0;
+            for (int i = 0; i < c; i++) {
+                count = 0;
+                for (int k = 0; k < size; k++) {
+                    if (i == type[k]) {
+                        count++;
+                    }
+                }
+                if (count > maxCount) {
+                    maxCount = count;
+                }
+            }
+            // 输出结果
+            System.out.println(maxCount);
+        }
+    }
+    
+    private static int getValidType(int num, int b, int c) {
+        // int转换为4个字节相加
+        int sum = 0;
+        for (int i = 0; i < 4; i++) {
+            sum += num % 256;
+            num /= 256;
+        }
+        int mod = sum % b;
+        return mod < c ? mod : -1;
+    }
+}
+
+44、数列描述
+有一个数列a[N] (N=60)，从a[0]开始，每一项都是一个数字。数列中a[n+1]都是a[n]的描述。其中a[0]=1。
+
+规则如下：
+
+a[0]:1
+
+a[1]:11(含义：其前一项a[0]=1是1个1，即“11”。表示a[0]从左到右，连续出现了1次“1”）
+
+a[2]:21(含义：其前一项a[1]=11，从左到右：是由两个1组成，即“21”。表示a[1]从左到右，连续出现了两次“1”)
+
+a[3]:1211(含义：其前一项a[2]=21，从左到右：是由一个2和一个1组成，即“1211”。表示a[2]从左到右，连续出现了1次“2”，然后又连续出现了1次“1”)
+
+a[4]:111221(含义：其前一项a[3]=1211，从左到右：是由一个1、一个2、两个1组成，即“111221”。表示a[3]从左到右，连续出现了1次“1”，连续出现了1次“2”，连续出现了两次“1”)
+
+请输出这个数列的第n项结果（a[n]，0≤n≤59）。
+
+输入描述:
+数列的第n项(0≤n≤59)：
+4
+输出描述:
+数列的内容：
+111221
+
+示例1
+输入
+4
+输出
+111221
+
+答案：
+解法一：
+import java.util.Scanner;
+public class Main{
+    public static void main(String[] args){
+        int count=new Scanner(System.in).nextInt()+1;
+        String[] raw = new String[count];
+        raw[0]="1";
+        for(int i=1;i<count;i++){
+            StringBuilder builder=new StringBuilder();
+            char[] lastStr=raw[i-1].toCharArray();
+            char now=lastStr[0];
+            int charCount=1;
+            int index=1;
+            while(index<lastStr.length){
+                if(lastStr[index]==now) charCount++;
+                else{
+                    builder.append(charCount).append(now);
+                    now = lastStr[index];
+                    charCount=1;
+                }
+                index++;
+            }
+            builder.append(charCount).append(now);
+            raw[i]=builder.toString();
+        }
+        System.out.println(raw[count-1]);
+    }
+}
+
+45、数字涂色
+疫情过后，希望小学终于又重新开学了，三年二班开学第一天的任务是将后面的黑板报重新制作。黑板上已经写上了N个正整数，同学们需要给这每个数分别上一种颜色。为了让黑板报既美观又有学习意义，老师要求同种颜色的所有数都可以被这种颜色中最小的那个数整除。现在请你帮帮小朋友们，算算最少需要多少种颜色才能给这N个数进行上色。
+
+输入描述:
+第一行有一个正整数N，其中1 \leq N \leq 1001≤N≤100。
+第二行有N个int型数(保证输入数据在[1,100]范围中)，表示黑板上各个正整数的值。
+输出描述:
+输出只有一个整数，为最少需要的颜色种数。
+
+示例1
+输入
+3
+2 4 6
+输出
+1
+说明
+所有数都能被2整除
+示例2
+输入
+4
+2 3 4 9
+输出
+2
+说明
+2与4涂一种颜色，4能被2整除；3与9涂另一种颜色，9能被3整除。不能4个数涂同一个颜色，因为3与9不能被2整除。所以最少的颜色是两种。
+
+答案:
+解法一：
+import com.sun.imageio.plugins.common.I18N;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String [] args){
+        Scanner input = new Scanner(System.in);
+        Map<Integer,List<Integer>> result = new HashMap<>();
+        List<Integer> numList = new ArrayList<>();
+        while(input.hasNext()){
+            Integer N = input.nextInt();
+            for(int i=0;i<N;i++){
+                numList.add(input.nextInt());
+            }
+            numList = numList.stream().sorted().collect(Collectors.toList());
+            for(int i =0;i<numList.size();i++){
+                if(i==0){
+                    List<Integer> singleList = new ArrayList<>();
+                    singleList.add(numList.get(i));
+                    result.put(numList.get(i),singleList);
+                }else{
+                    List<Map.Entry<Integer,List<Integer>>> mapList = result.entrySet().stream().collect(Collectors.toList());
+                    for(int j=0;j<mapList.size();j++){
+                        if(numList.get(i)%mapList.get(j).getKey()==0){
+                            result.get(mapList.get(j).getValue().add(numList.get(i)));
+                            break;
+                        }else {
+                            if(j==mapList.size()-1){
+                                List<Integer> singleList = new ArrayList<>();
+                                singleList.add(numList.get(i));
+                                result.put(numList.get(i),singleList);
+                            }
+                        }
+
+                    }
+                }
+            }
+            System.out.println(result.size());
+        }
+    }
+}
+
+46、数组二叉树
+二叉树也可以用数组来存储，给定一个数组，树的根节点的值存储在下标1，对于存储在下标N的节点，它的左子节点和右子节点分别存储在下标2*N和2*N+1，并且我们用值-1代表一个节点为空。
+
+给定一个数组存储的二叉树，试求从根节点到最小的叶子节点的路径，路径由节点的值组成。
+
+输入描述:
+输入一行为数组的内容，数组的每个元素都是正整数，元素间用空格分隔。注意第一个元素即为根节点的值，即数组的第N个元素对应下标N，下标0在树的表示中没有使用，所以我们省略了。输入的树最多为7层。
+输出描述:
+输出从根节点到最小叶子节点的路径上，各个节点的值，由空格分隔，用例保证最小叶子节点只有一个。
+
+示例1
+输入
+3 5 7 -1 -1 2 4
+输出
+3 7 2
+说明
+数组存储的二叉树如图，故到最小叶子节点的路径为3 7 2
+示例2
+输入
+5 9 8 -1 -1 7 -1 -1 -1 -1 -1 6
+输出
+5 8 7 6
+说明
+数组存储的二叉树如图，故到最小叶子节点的路径为10 8 7 6，注意数组仅存储至最后一个非空节点，故不包含节点“7”右子节点的-1
+
+答案：
+解法一：
+import java.util.*;
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        ArrayList<Integer> array = new ArrayList<>();
+
+        while (in.hasNextInt()) {
+            array.add(in.nextInt());
+        }
+        fun(array);
+
+    }
+
+    private static int dfs(List<Integer> nums, int index) {
+        if (isLeaf(nums, index)) {
+            return index;
+        } else {
+            int i1 = dfs(nums, 2 * index + 1);
+            int i2 = dfs(nums, 2 * index + 2);
+            if (i1 >= nums.size() || nums.get(i1) == -1) {
+                return i2;
+            } else if (i2 >= nums.size() || nums.get(i2) == -1) {
+                return i1;
+            } else {
+                return nums.get(i1) < nums.get(i2) ? i1 : i2;
+            }
+        }
+    }
+
+    private static boolean isLeaf(List<Integer> nums, int index) {
+        return (2 * index + 1 >= nums.size() || nums.get(2 * index + 1) == -1)
+                && (2 * index + 2 >= nums.size() || nums.get(2 * index + 2) == -1);
+    }
+
+    private static void fun(List<Integer> nums) {
+        int index = dfs(nums, 0);
+        ArrayList<Integer> arr = new ArrayList<>();
+        while (index > 0) {
+            arr.add(nums.get(index));
+            index = (index - 1) / 2;
+        }
+        arr.add(nums.get(0));
+
+        Collections.reverse(arr);
+        for (Integer integer : arr) {
+            System.out.print(integer + " ");
+        }
+    }
+}
+
+47、数组拼接
+现在有多组整数数组，需要将它们合并成一个新的数组。合并规则，从每个数组里按顺序取出固定长度的内容合并到新的数组中，取完的内容会删除掉，如果该行不足固定长度或者已经为空，则直接取出剩余部分的内容放到新的数组中，继续下一行。
+
+输入描述:
+第一行是每次读取的固定长度，0<长度<10
+第二行是整数数组的数目，0<数目<1000
+第3-n行是需要合并的数组，不同的数组用回车换行分隔，数组内部用逗号分隔，最大不超过100个元素。
+输出描述:
+输出一个新的数组，用逗号分隔。
+
+示例1
+输入
+3
+2
+2,5,6,7,9,5,7
+1,7,4,3,4
+输出
+2,5,6,1,7,4,7,9,5,3,4,7
+说明
+1、获得长度3和数组数目2。
+2、先遍历第一行，获得2,5,6；
+3、再遍历第二行，获得1,7,4；
+4、再循环回到第一行，获得7,9,5；
+5、再遍历第二行，获得3,4；
+6、再回到第一行，获得7，按顺序拼接成最终结果。
+示例2
+输入
+4
+3
+1,2,3,4,5,6
+1,2,3
+1,2,3,4
+输出
+1,2,3,4,1,2,3,1,2,3,4,5,6
+
+答案：
+解法一：
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while (sc.hasNextLine()) {
+            int len = Integer.parseInt(sc.nextLine());
+            int arrNum = Integer.parseInt(sc.nextLine());
+            String[][] strArr = new String[arrNum][];
+            int maxLen = 0;
+            for (int i = 0; i < arrNum; i++){
+                String str = sc.nextLine();
+                if (str.length() > 0){
+                    strArr[i] = str.split(",");
+                    if (strArr[i].length > maxLen){
+                        maxLen = strArr[i].length;
+                    }
+                }
+            }
+            int index = 0;
+            StringBuilder sb = new StringBuilder();
+            while (index < maxLen){
+                for (int i = 0; i < arrNum; i++){
+                    String[] arr = strArr[i];
+                    if (arr == null){
+                        continue;
+                    }
+                    for (int j = index; j < index + len; j++){
+                        if (j < arr.length){
+                            sb.append(arr[j]).append(",");
+                        }
+                    }
+                }
+                index += len;
+            }
+            int lastIndex = sb.lastIndexOf(",");
+            if (lastIndex != -1){
+                sb.deleteCharAt(lastIndex);
+            }
+            System.out.println(sb);
+        }
+    }
+}
+
+48、数组去重和排序
+给定一个乱序的数组，删除所有的重复元素，使得每个元素只出现一次，并且按照出现的次数从高到低进行排序，相同出现次数按照第一次出现顺序进行先后排序。
+
+输入描述:
+一个数组
+输出描述:
+去重排序后的数组
+
+示例1
+输入
+1,3,3,3,2,4,4,4,5
+输出
+3,4,1,2,5
+
+备注:
+数组大小不超过100
+数组元素值大小不超过100
+
+答案：
+解法一：
+import java.util.Scanner;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String line = sc.nextLine();
+        String[] numbers = line.split(",");
+        int[] ints = new int[numbers.length];
+        for (int i = 0; i < ints.length; i++) {
+            ints[i] = Integer.valueOf(numbers[i]);
+        }
+        LinkedHashMap<Integer, Integer> map = new LinkedHashMap<>();
+        for (int i = 0; i < ints.length; i++) {
+            if (map.isEmpty()) {
+                map.put(ints[i], 1);
+            } else {
+                if (map.containsKey(ints[i])) {
+                    int value = map.get(ints[i]);
+                    value++;
+                    map.put(ints[i], value);
+                } else {
+                    map.put(ints[i], 1);
+                }
+            }
+
+        }
+        Set<Map.Entry<Integer, Integer>> set = map.entrySet();
+        LinkedList<Map.Entry<Integer, Integer>> list = new LinkedList<>(set);
+        list.sort((o1, o2) -> o2.getValue() - o1.getValue());
+        for (int i = 0; i < list.size(); i++) {
+            Map.Entry<Integer, Integer> entry = list.get(i);
+            if (i != list.size() - 1) {
+                System.out.print(entry.getKey() + ",");
+            } else {
+                System.out.println(entry.getKey());
+            }
+        }
+    }
+}
+
+49、数组组成的最小数字
+给定一个整型数组，请从该数组中选择3个元素组成最小数字并输出（如果数组长度小于3，则选择数组中所有元素来组成最小数字）。
+
+输入描述:
+一行用半角逗号分割的字符串记录的整型数组，0 < 数组长度 <= 100，0 < 整数的取值范围 <= 10000。
+
+输出描述:
+由3个元素组成的最小数字，如果数组长度小于3，则选择数组中所有元素来组成最小数字。
+
+示例1
+输入
+21,30,62,5,31
+输出
+21305
+说明
+数组长度超过3，需要选3个元素组成最小数字，21305由21,30,5三个元素组成的数字，为所有组合中最小的数字
+示例2
+输入
+5,21
+输出
+215
+说明
+数组长度小于3， 选择所有元素来主城最小值，215为最小值。
+
+答案：
+解法一：
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        //获取输入存到数组中
+        Scanner scanner = new Scanner(System.in);
+        String inputString = scanner.nextLine();
+        String[] numberArr = inputString.split(",");
+
+
+        //计算
+        if(numberArr.length<=0){
+            return;
+        }else if(numberArr.length ==1 ){ //只有一个数，直接输出
+            System.out.println(numberArr[0]);
+        }else if(numberArr.length ==2 ){ //有两个数，排列组合一下就行
+            int s1 = Integer.parseInt(numberArr[0] + numberArr[1]);
+            int s2 = Integer.parseInt(numberArr[1] + numberArr[0]);
+            System.out.println(s1<s2?s1:s2);
+        }else { //有3个数以上，先排序找出最小的三个数在进行组合
+            Arrays.sort(numberArr, new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    return Integer.parseInt(o1)-Integer.parseInt(o2);
+                }
+            });
+
+            String[] min3Num = Arrays.copyOf(numberArr,3);
+
+            Arrays.sort(min3Num);
+
+            String res="";
+            for (String s:min3Num){
+                res += s;
+            }
+            System.out.println(res);
+        }
+
+
+    }
+}
+
+50、水仙花数
+所谓水仙花数，是指一个n位的正整数，其各位数字的n次方和等于该数本身。例如153是水仙花数，153是一个3位数，并且153 = 1^3 + 5^3 + 3^3。
+
+输入描述:
+第一行输入一个整数n，表示一个n位的正整数。n在3到7之间，包含3和7。
+第二行输入一个正整数m，表示需要返回第m个水仙花数。
+输出描述:
+返回长度是n的第m个水仙花数。个数从0开始编号。
+若m大于水仙花数的个数，返回最后一个水仙花数和m的乘积。
+若输入不合法，返回-1。
+
+示例1
+输入
+3 0
+输出
+153
+说明
+153是第一个水仙花数
+示例2
+输入
+9
+1
+输出
+-1
+说明
+9超出范围
+
+答案：
+解法一：
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class Main{
+      public static void main(String[] args) {
+        //水仙数个数
+        calcute1();
+    }
+    
+       public static void calcute1(){
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();//位数
+        if (n >= 3 && n <= 7){
+            int m = sc.nextInt();//第几个
+            int temp = 1;
+            for (int i = 0 ; i < n ; i ++){
+                temp *= 10;
+            }
+            int min = temp / 10;
+            int max = temp- 1;
+            Map<Integer, Integer> data = new HashMap<>();
+            int count = 0;
+            int lastNum = 0;
+            for (int i = min ; i <= max ; i ++){
+                if (isRightNum(i, n)) {
+                    data.put(count++, i);
+                    if (i > lastNum){
+                        lastNum = i;
+                    }
+                }
+            }
+            if (data.containsKey(m)){
+                System.out.println(data.get(m));
+            } else {
+                System.out.println(lastNum * m);
+            }
+        } else {
+            System.out.println(-1);
+        }
+    }
+
+    public static boolean isRightNum(int num, int n){
+        boolean result = false;
+        String[] numStrs = String.valueOf(num).split("");
+        int[] data = new int[numStrs.length];
+        for (int i = 0 ; i < numStrs.length; i ++){
+            data[i] = Integer.parseUnsignedInt(numStrs[i]);
+        }
+        int sum = 0;
+        for (int i = 0 ; i < n ; i ++){
+            sum += getCalcuteNum(data[i], n);
+        }
+        if (sum == num){
+            result = true;
+        }
+        return result;
+    }
+
+    public static int getCalcuteNum(int a, int b){
+        int result = 1;
+        for (int i = 0; i < b ; i ++){
+            result *=a;
+        }
+        return result;
+    }
+}

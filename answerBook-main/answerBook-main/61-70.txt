@@ -1,0 +1,698 @@
+
+61、一种字符串压缩表示的解压 
+有一种简易压缩算法：针对全部由小写英文字母组成的字符串，将其中连续超过两个相同字母的部分压缩为连续个数加该字母，其他部分保持原样不变。例如：字符串“aaabbccccd”经过压缩成为字符串“3abb4cd”。 请您编写解压函数，根据输入的字符串，判断其是否为合法压缩过的字符串，若输入合法则输出解压缩后的字符串，否则输出字符串“!error”来报告错误。
+
+输入描述:
+输入一行，为一个ASCII字符串，长度不会超过100字符，用例保证输出的字符串长度也不会超过100字符
+输出描述:
+若判断输入为合法的经过压缩后的字符串，则输出压缩前的字符串；若输入不合法，则输出字符串“!error”。
+
+示例1
+输入
+4dff
+输出
+ddddff
+说明
+4d扩展为dddd，故解压后的字符串为ddddff
+示例2
+输入
+2dff
+输出
+!error
+说明
+两个d不需要压缩，故输入不合法
+示例3
+输入
+4d@A
+输出
+!error
+说明
+全部由小写英文字母组成的字符串压缩后不会出现特殊字符@和大写字母A，故输入不合法
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String str, tmp, res;
+        char ch;
+        int count;
+        while (scanner.hasNext()) {
+            str = scanner.next();
+            res = "";
+            if (str.matches(".*[^0-9a-z].*") || str.matches("^.*[0-9]+$")) {
+                System.out.println("!error");
+                continue;
+            }
+            for (int i = 0, k, len = str.length(); i < len; i++) {
+                ch = str.charAt(i);
+                tmp = "";
+                if (ch >= 'a' && ch <= 'z') {
+                    k = i;
+                    for (k = i + 1; k < len; ++k) {
+                        if (ch != str.charAt(k)) {
+                            break;
+                        }
+                    }
+                    if (k - i > 2) {
+                        res = "!error";
+                        break;
+                    }
+                }
+                while (ch >= '0' && ch <= '9') {
+                    tmp += ch;
+                    ++i;
+                    ch = str.charAt(i);
+                }
+                if (!tmp.isEmpty()) {
+                    count = Integer.parseInt(tmp);
+                    if (count < 3) {
+                        res = "!error";
+                        break;
+                    }
+                    for (int j = 0; j < count; j++) {
+                        res += ch;
+                    }
+                } else {
+                    res += ch;
+                }
+            }
+            System.out.println(res);
+        }
+    }
+}
+
+62、英文输入法
+主管期望你来实现英文输入法单词联想功能。需求如下：
+依据用户输入的单词前缀，从已输入的英文语句中联想出用户想输入的单词，按字典序输出联想到的单词序列，如果联想不到，请输出用户输入的单词前缀。
+
+注意：
+1.  英文单词联想时，区分大小写
+2.  缩略形式如”don't”，判定为两个单词，”don”和”t”
+3.  输出的单词序列，不能有重复单词，且只能是英文单词，不能有标点符号
+
+输入描述:
+输入为两行。
+首行输入一段由英文单词word和标点符号组成的语句str；
+接下来一行为一个英文单词前缀pre。
+0 < word.length() <= 20
+0 < str.length <= 10000
+0 < pre <= 20
+
+输出描述:
+输出符合要求的单词序列或单词前缀，存在多个时，单词之间以单个空格分割
+
+示例1
+输入
+I love you
+He
+输出
+He
+说明
+从用户已输入英文语句”I love you”中提炼出“I”、“love”、“you”三个单词，接下来用户输入“He”，从已输入信息中无法联想到任何符合要求的单词，因此输出用户输入的单词前缀。
+
+示例2
+输入
+The furthest distance in the world, Is not between life and death, But when I stand in front of you, Yet you don't know that I love you.
+f
+输出
+front furthest
+说明
+从用户已输入英文语句”The furthestdistance in the world, Is not between life and death, But when I stand in frontof you, Yet you dont know that I love you.”中提炼出的单词，符合“f”作为前缀的，有“furthest”和“front”，按字典序排序并在单词间添加空格后输出，结果为“frontfurthest”。
+
+答案：
+解法一：
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+	public static void main(String[] args) {
+		Scanner in = new Scanner(System.in);
+		while (in.hasNextLine()) {// 注意，如果输入是多个测试用例，请通过while循环处理多个测试用例
+			String[] arr = in.nextLine().split("[^a-zA-Z]+");
+			String key = in.nextLine();
+			List<String> result = new ArrayList<>();
+			for (String str : arr) {
+				if (str.startsWith(key) && !result.contains(str)) {
+					result.add(str);
+				}
+			}
+
+			if (result.isEmpty()) {
+				System.out.println(key);
+			} else {
+				Collections.sort(result);
+				StringBuffer tmp = new StringBuffer();
+				for (String str : result) {
+					tmp.append(str).append(" ");
+				}
+				System.out.println(tmp.toString().trim());
+			}
+
+		}
+	}
+}
+
+62、用户调度问题
+在通信系统中，一个常见的问题是对用户进行不同策略的调度，会得到不同的系统消耗和性能。
+
+假设当前有n个待串行调度用户，每个用户可以使用A/B/C三种不同的调度策略，不同的策略会消耗不同的系统资源。请你根据如下规则进行用户调度，并返回总的消耗资源数。
+规则：
+
+1.     相邻的用户不能使用相同的调度策略，例如，第1个用户使用了A策略，则第2个用户只能使用B或者C策略。
+2.     对单个用户而言，不同的调度策略对系统资源的消耗可以归一化后抽象为数值。例如，某用户分别使用A/B/C策略的系统消耗分别为15/8/17。
+3.     每个用户依次选择当前所能选择的对系统资源消耗最少的策略（局部最优），如果有多个满足要求的策略，选最后一个。
+
+输入描述:
+第一行表示用户个数n
+接下来每一行表示一个用户分别使用三个策略的系统消耗resA resB resC
+输出描述:
+最优策略组合下的总的系统资源消耗数
+
+示例1
+输入
+3
+15 8 17
+12 20 9
+11 7 5
+输出
+24
+说明
+1号用户使用B策略，2号用户使用C策略，3号用户使用B策略。系统资源消耗: 8 + 9 + 7 = 24。
+
+备注:
+所有策略对系统的资源消耗均为正整数，n < 1000
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNextInt()) {
+            int number = scanner.nextInt();
+            int[][] input = new int[number][3];
+            for (int i = 0; i < number; i++) {
+                for (int j = 0; j < 3; j++) {
+                    input[i][j] = scanner.nextInt();
+                }
+            }
+            int preSelectedIndex = -1;
+            long sum = 0;
+            for (int i = 0; i < number; i++) {
+                int min = 0;
+                int currentMinIndex = 0;
+                for (int j = 0; j < 3; j++) {
+                    if ((min == 0 && preSelectedIndex != j) ||
+                            (input[i][j] <= min && preSelectedIndex != j)) {
+                        min = input[i][j];
+                        currentMinIndex = j;
+                    }
+                }
+                preSelectedIndex = currentMinIndex;
+                sum += min;
+            }
+            System.out.println(sum);
+        }
+    }
+}
+
+
+63、用连续自然数之和来表达整数
+一个整数可以由连续的自然数之和来表示。给定一个整数，计算该整数有几种连续自然数之和的表达式，且打印出每种表达式。
+
+输入描述:
+一个目标整数T (1 <=T<= 1000)
+输出描述:
+该整数的所有表达式和表达式的个数。如果有多种表达式，输出要求为：
+1.自然数个数最少的表达式优先输出
+2.每个表达式中按自然数递增的顺序输出，具体的格式参见样例。在每个测试数据结束时，输出一行”Result:X”，其中X是最终的表达式个数。
+
+示例1
+输入
+9
+输出
+9=9
+9=4+5
+9=2+3+4
+Result:3
+说明
+整数 9 有三种表示方法，第1个表达式只有1个自然数，最先输出，第2个表达式有2个自然数，第2次序输出，第3个表达式有3个自然数，最后输出。每个表达式中的自然数都是按递增次序输出的。
+数字与符号之间无空格
+
+示例2
+输入
+10
+输出
+10=10
+10=1+2+3+4
+Result:2
+
+答案：
+解法一：
+
+import java.util.Scanner;
+import java.util.Stack;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNext()) {
+            int taget = scanner.nextInt();
+            findAllResult(taget);
+        }
+//        findAllResult(10);
+    }
+
+    private static void findAllResult(int t){
+        //存放结果
+        Stack<String> res = new Stack<>();
+        int count = 0;
+        //以i结尾的表达式
+        for (int i = 1; i <=t; i++) {
+            int tempR=t;
+            int p = i;
+            StringBuilder sb = new StringBuilder();
+            sb.append(t).append("=");
+            while (p<=t && tempR>0) {
+                tempR-=p;
+                sb.append(p).append(tempR==0 ? "" : "+");
+                p++;
+            }
+            if (tempR==0) {
+                count++;
+                res.push(sb.toString());
+            }
+        }
+        while (!res.isEmpty()) {
+            System.out.println(res.pop());
+        }
+        System.out.println("Result:"+count);
+    }
+}
+
+64、找车位
+停车场有一横排车位，0代表没有停车，1代表有车。至少停了一辆车在车位上，也至少有一个空位没有停车。
+为了防剐蹭，需为停车人找到一个车位，使得距停车人的车最近的车辆的距离是最大的，返回此时的最大距离。
+
+输入描述:
+1、一个用半角逗号分割的停车标识字符串，停车标识为0或1，0为空位，1为已停车。
+2、停车位最多100个。
+输出描述:
+输出一个整数记录最大距离。
+
+示例1
+输入
+1,0,0,0,0,1,0,0,1,0,1
+输出
+2
+说明
+当车停在第3个位置上时，离其最近的的车距离为2（1到3）。
+当车停在第4个位置上时，离其最近的的车距离为2（4到6）。
+其他位置距离为1。
+因此最大距离为2。
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String line = sc.next();
+        String[] place = line.split(",");
+        int count = 0, max = 0, left = 0;
+        for (String s : place) {
+            if (s.equals("0")) {
+                count++;
+            } else {
+                if (left == 0) {
+                    max = count * 2;
+                    left = 1;
+                } else {
+                    max = Math.max(max, count);
+                }
+                count = 0;
+            }
+        }
+        if (place[place.length - 1].equals("0")) {
+            max = Math.max(max, count * 2);
+        } else {
+            max = Math.max(max, count);
+        }
+        System.out.println((max + 1) / 2);
+    }
+}
+
+
+65、找出符合要求的字符串子串
+给定两个字符串，从字符串2中找出字符串1中的所有字符，去重并按照ASCII值从小到大排序
+输入字符串1：长度不超过1024
+输入字符串2：长度不超过1000000
+字符范围满足ASCII编码要求，按照ASCII的值由小到大排序
+
+输入描述:
+bach
+bbaaccedfg
+输出描述:
+abc
+
+示例1
+输入
+fach
+bbaaccedfg
+输出
+acf
+说明
+备注:
+输入字符串1 为给定字符串bach，输入字符串2  bbaaccedfg
+从字符串2中找出字符串1的字符，去除重复的字符，并且按照ASCII值从小到大排序，得到输出的结果为abc。
+字符串1中的字符h在字符串2中找不到不输出。
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner s =new Scanner(System.in);
+        String str1=s.nextLine();
+        String str2=s.nextLine();
+        char[] arr2=str2.toCharArray();
+        int[] arr4=new int[150];
+        for(char c:arr2){
+            if(str1.contains(c+"")){
+                int b=(int)c;
+                arr4[(int)c]=1;
+            }
+        }
+        for(int i=1;i<arr4.length;i++){
+            if(arr4[i]==1){
+                System.out.print((char)i);
+            }
+        }
+    }
+}
+
+
+66、找朋友
+在学校中，N个小朋友站成一队， 第i个小朋友的身高为height[i]，
+第i个小朋友可以看到的第一个比自己身高更高的小朋友j，那么j是i的好朋友(要求j > i)。
+请重新生成一个列表，对应位置的输出是每个小朋友的好朋友位置，如果没有看到好朋友，请在该位置用0代替。
+小朋友人数范围是 [0, 40000]。
+
+输入描述:
+第一行输入N，N表示有N个小朋友
+第二行输入N个小朋友的身高height[i]，都是整数
+输出描述:
+输出N个小朋友的好朋友的位置
+
+示例1
+输入
+2
+100 95
+输出
+0 0
+说明
+第一个小朋友身高100，站在队尾位置，向队首看，没有比他身高高的小朋友，所以输出第一个值为0。
+第二个小朋友站在队首，前面也没有比他身高高的小朋友，所以输出第二个值为0。
+示例2
+输入
+8
+123 124 125 121 119 122 126 123
+输出
+1 2 6 5 5 6 0 0
+说明
+123的好朋友是1位置上的124
+124的好朋友是2位置上的125
+125的好朋友是6位置上的126
+以此类推
+
+答案：
+解法一：
+import java.util.Scanner;
+public class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        int[][] map = new int[n][m];
+        int maxNum = 0;
+        int num[] = new int[n];
+        for(int i = 0 ; i < n ; i ++){
+            for(int j = 0; j < m ; j ++){
+                map[i][j] =sc.nextInt(); 
+            }
+        }
+        for(int i =0 ;i <n;i++){
+            int[] hang = new int[m];
+            int[] lie = new int[m];
+            for(int j = i;j < n ; j ++){
+                for(int k = 0;k<m;k++){
+                    hang[k] = hang[k]+map[j][k];
+                    maxNum =Math.max(maxNum,hang[k]);
+                    lie[0] =hang[0];
+                    for(int s=1;s<m;s++){
+                        if(lie[s-1]<0){
+                            lie[s] = hang[s];
+                        }else{
+                            lie[s] =lie[s-1]+hang[s];
+                        }
+                        maxNum = Math.max(maxNum,lie[s]);
+                    }
+                }
+            }
+        }
+        System.out.println(maxNum);
+    } 
+}
+
+67、找终点
+给定一个正整数数组，设为nums，最大为100个成员，求从第一个成员开始，正好走到数组最后一个成员，所使用的最少步骤数。
+要求：
+1、第一步必须从第一元素开始，且1<=第一步的步长<len/2;（len为数组的长度，需要自行解析）。
+2、从第二步开始，只能以所在成员的数字走相应的步数，不能多也不能少, 如果目标不可达返回-1，只输出最少的步骤数量。
+3、只能向数组的尾部走，不能往回走。
+
+输入描述:
+由正整数组成的数组，以空格分隔，数组长度小于100，请自行解析数据数量。
+输出描述:
+正整数，表示最少的步数，如果不存在输出-1
+
+示例1
+输入
+7 5 9 4 2 6 8 3 5 4 3 9
+输出
+2
+说明
+第一步： 第一个可选步长选择2，从第一个成员7开始走2步，到达9；第二步： 从9开始，经过自身数字9对应的9个成员到最后。
+示例2
+输入
+1 2 3 7 1 5 9 3 2 1
+输出
+-1
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+    	Scanner scanner = new Scanner(System.in);
+    	while (scanner.hasNext()) {
+    	   String line = scanner.nextLine();
+    	   String[] eles = line.split(" ");
+    	   int [] datas = new int[eles.length];
+    	   for (int index = 0; index < eles.length; index++) {
+    	       datas[index] = Integer.parseInt(eles[index]);
+    	   }
+    	   findPath(datas);
+        }
+    }
+
+    private static void findPath(int[] datas) {
+        int minStep = -1;
+        int current = 0;
+        for (int firstStep = 1; firstStep < datas.length / 2; firstStep++) {
+            current = firstStep;
+            int step = 1;
+            while (current < datas.length - 1) {
+                current += datas[current];
+                step++;
+            }
+            if (current == datas.length - 1) {
+                if (minStep == -1) minStep = step;
+                else if (minStep > step) minStep = step;
+            }
+        }
+        System.out.println(minStep);
+    }
+}
+
+
+68、整数编码
+实现一种整数编码方法，使得待编码的数字越小，编码后所占用的字节数越小。
+编码规则如下：
+1、编码时7位一组，每个字节的低7位用于存储待编码数字的补码。
+2、字节的最高位表示后续是否还有字节，置1表示后面还有更多的字节，置0表示当前字节为最后一个字节。
+3、采用小端序编码，低位和低字节放在低地址上。
+3、编码结果按16进制数的字符格式输出，小写字母需转换为大写字母。
+
+输入描述:
+输入的为一个字符串表示的非负整数
+输出描述:
+输出一个字符串，表示整数编码的16进制码流
+
+示例1
+输入
+0
+输出
+00
+说明
+输出的16进制字符，不足两位的前面补0，如00、01、02。
+示例2
+输入
+100
+输出
+64
+说明
+100的二进制表示为0110 0100，只需要一个字节进行编码；
+字节的最高位置0，剩余7位存储数字100的低7位（110 0100），所以编码后的输出为64。
+示例3
+输入
+1000
+输出
+E807
+说明
+1000的二进制表示为0011 1110 1000，至少需要两个字节进行编码；
+第一个字节最高位置1，剩余的7位存储数字1000的第一个低7位（110 1000），所以第一个字节的二进制为1110 1000，即E8；
+第二个字节最高位置0，剩余的7位存储数字1000的第二个低7位（000 0111），所以第一个字节的二进制为0000 0111，即07；
+采用小端序编码，所以低字节E8输出在前，高字节07输出在后。
+备注:
+待编码的数字取值范围为[0, 1<<64 - 1]
+
+答案：
+解法一：
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException, IOException {
+        Scanner in = new Scanner(System.in);
+        long l = in.nextLong();
+        //转二进制
+        String s = Long.toBinaryString(l);
+
+        //如果不到7位，前面补0
+        StringBuilder sb = new StringBuilder(7);
+        if (s.length() % 7 != 0)
+            for (int i = 0; i < 7 - s.length() % 7; i++) {
+                sb.append("0");
+            }
+        s = sb.toString() + s;
+        //按照规定顺序，输出16进制
+        getRes(s);
+    }
+
+    private static void getRes(String s) {
+        int index = s.length();
+        StringBuilder res = new StringBuilder();
+        while (index > 7) {
+            int num = Integer.parseInt("1" + s.substring(index - 7, index), 2);
+            String hex = Integer.toHexString(num);
+            if (hex.length() == 1) {
+                res.append(1);
+            }
+            res.append(hex);
+            index -= 7;
+        }
+        //解析最后
+        int num = Integer.parseInt("0" + s.substring(0, 7), 2);
+        String hex = Integer.toHexString(num);
+        if (hex.length() == 1) {
+            res.append(0);
+        }
+        res.append(hex);
+
+        System.out.println(res.toString().toUpperCase());
+    }
+}
+
+
+69、整数对最小和
+给定两个整数数组array1、array2，数组元素按升序排列。假设从array1、array2中分别取出一个元素可构成一对元素，现在需要取出k对元素，并对取出的所有元素求和，计算和的最小值
+注意：两对元素如果对应于array1、array2中的两个下标均相同，则视为同一对元素。
+
+输入描述:
+输入两行数组array1、array2，每行首个数字为数组大小size(0 < size <= 100);
+0 < array1[i] <= 1000
+0 < array2[i] <= 1000
+接下来一行为正整数k
+0 < k <= array1.size() * array2.size()
+输出描述:
+满足要求的最小和
+
+示例1
+输入
+3 1 1 2
+3 1 2 3
+2
+输出
+4
+说明
+用例中，需要取2对元素
+取第一个数组第0个元素与第二个数组第0个元素组成1对元素[1,1];
+取第一个数组第1个元素与第二个数组第0个元素组成1对元素[1,1];
+求和为1+1+1+1=4，为满足要求的最小和
+
+
+70、整型数组按个位值排序 
+给定一个非空数组（列表），其元素数据类型为整型，请按照数组元素十进制最低位从小到大进行排序，十进制最低位相同的元素，相对位置保持不变。
+当数组元素为负值时，十进制最低位等同于去除符号位后对应十进制值最低位。
+
+输入描述:
+给定一个非空数组，其元素数据类型为32位有符号整数，数组长度[1, 1000]
+输出描述:
+输出排序后的数组
+
+示例1
+输入
+1,2,5,-21,22,11,55,-101,42,8,7,32
+输出
+1,-21,11,-101,2,22,42,32,5,55,7,8
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		String str = sc.nextLine();
+		String [] strs = str.split(",");
+		StringBuffer sb= new StringBuffer();
+		int i = 0;
+		while(i<=9) {
+			for(String s : strs) {
+				int a = Integer.parseInt(s.substring(s.length()-1));
+				if(a == i) {
+					sb.append(s).append(",");
+				}
+			}
+			i++;
+		}
+		String str2 = sb.toString();
+		str2 = str2.substring(0,str2.length()-1);
+		System.out.print(str2);
+		
+	}
+
+}
+

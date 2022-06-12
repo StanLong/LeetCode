@@ -1,0 +1,943 @@
+
+11、磁盘容量排序 
+磁盘的容量单位常用的有M，G，T这三个等级，它们之间的换算关系为1T = 1024G，1G = 1024M，现在给定n块磁盘的容量，请对它们按从小到大的顺序进行稳定排序，例如给定5块盘的容量，1T，20M，3G，10G6T，3M12G9M排序后的结果为20M，3G，3M12G9M，1T，10G6T。注意单位可以重复出现，上述3M12G9M表示的容量即为3M+12G+9M，和12M12G相等。
+
+输入描述:
+输入第一行包含一个整数n(2 <= n <= 100)，表示磁盘的个数，接下的n行，每行一个字符串(长度大于2，小于30)，表示磁盘的容量，由一个或多个格式为mv的子串组成，其中m表示容量大小，v表示容量单位，例如20M，1T，30G，10G6T，3M12G9M。
+
+磁盘容量m的范围为1到1024的正整数，容量单位v的范围只包含题目中提到的M，G，T三种，换算关系如题目描述。
+输出描述:
+输出n行，表示n块磁盘容量排序后的结果。
+
+示例1：
+输入
+3
+1G
+2G
+1024M
+输出
+1G
+1024M
+2G
+说明
+1G和1024M容量相等，稳定排序要求保留它们原来的相对位置，故1G在1024M之前
+示例2：
+输入
+3
+2G4M
+3M2G
+1T
+输出
+3M2G
+2G4M
+1T
+说明
+1T的容量大于2G4M，2G4M的容量大于3M2G
+
+答案：
+解法一：
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int getSize(string s) {
+    int ans = 0;
+    int curNum = 0;
+    for (char c: s) {
+        if (isdigit(c)) {
+            curNum = curNum * 10 + (c - '0');
+        } else {
+            if (c == 'M') {
+                ans += curNum;
+            } else if (c == 'G') {
+                ans += curNum * 1024;
+            } else if (c == 'T') {
+                ans += curNum * 1024 * 1024;
+            }
+            curNum = 0;
+        }
+    }
+    return ans;
+}
+
+bool cmp(const string& s1, const string& s2) {
+    return getSize(s1) < getSize(s2);
+}
+
+int main() {
+    string s;
+    int n;
+    cin >> n;
+    vector<string> size;
+    while(n--) {
+        cin >> s;
+        size.push_back(s);
+    }
+    stable_sort(size.begin(), size.end(), cmp);
+    for (string s: size) {
+        cout << s << endl;
+    }
+    return 0;
+}
+
+12、单词接龙 
+单词接龙的规则是：可用于接龙的单词首字母必须要前一个单词的尾字母相同；当存在多个首字母相同的单词时，取长度最长的单词，如果长度也相等，则取字典序最小的单词；已经参与接龙的单词不能重复使用。
+现给定一组全部由小写字母组成单词数组，并指定其中的一个单词作为起始单词，进行单词接龙，请输出最长的单词串，单词串是单词拼接而成，中间没有空格。
+
+输入描述:
+输入的第一行为一个非负整数，表示起始单词在数组中的索引K，0 <= K < N ；
+输入的第二行为一个非负整数，表示单词的个数N；
+接下来的N行，分别表示单词数组中的单词。
+输出描述:
+输出一个字符串，表示最终拼接的单词串。
+
+示例1：
+输入
+0
+6
+word
+dd
+da
+dc
+dword
+d
+输出
+worddwordda
+说明
+先确定起始单词word，再接以d开头的且长度最长的单词dword，剩余以d开头且长度最长的有dd、da、dc，则取字典序最小的da，所以最后输出worddwordda。
+示例2：
+输入
+4
+6
+word
+dd
+da
+dc
+dword
+d
+输出
+dwordda
+说明
+先确定起始单词dword，剩余以d开头且长度最长的有dd、da、dc，则取字典序最小的da，所以最后输出dwordda。
+备注:
+单词个数N的取值范围为[1, 20]；
+单个单词的长度的取值范围为[1, 30]；
+
+答案：
+解法一（python3）：
+while True:
+    try:
+        index = int(input())
+        n = int(input())
+        data = []
+        for _ in range(n):
+            data.append(input())
+        res = data[index]
+        data.remove(data[index])
+        for i in range(n - 1):
+            target = res[-1]
+            aa1 = []
+            aa2=[]
+            for j in data:
+                if j.startswith(target):
+                    aa1.append(j)
+                    aa2.append(len(j))
+            if aa1:
+                max_len = max(aa2)
+                if aa2.count(max_len)==1:
+                    res+=aa1[aa2.index(max_len)]
+                    data.remove(aa1[aa2.index(max_len)])
+                else:
+                    aa3=list(filter(lambda x:len(x)==max_len,aa1))
+                    aa3.sort()
+                    res+=aa3[0]
+                    data.remove(aa3[0])
+            else:
+                break
+        print(res)
+    except:
+        break
+
+12、第k个排列 【排列】
+给定参数n，从1到n会有n个整数：1,2,3,…,n，这n个数字共有 n! 种排列。
+按大小顺序升序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+给定 n 和 k，返回第 k 个排列。
+
+输入描述:
+输入两行，第一行为n，第二行为k，给定 n 的范围是 [1,9]，给定 k 的范围是[1,n!]。
+输出描述:
+输出排在第k位置的数字。
+
+示例1：
+输入
+3
+3
+输出
+213
+说明
+3的排列有123 132 213...，那么第3位置的为213
+示例2：
+输入
+2
+2
+输出
+21
+说明
+2的排列有12 21，那么第2位置的为21
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int k = sc.nextInt();
+        List<Integer> list = new ArrayList<>();
+        int[] arr = new int[n + 1];
+        arr[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            list.add(i);
+            arr[i] = arr[i - 1] * i;
+        }
+        k--;
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = n - 1; i >= 0; i--) {
+            int index = k / arr[i];
+            stringBuffer.append(list.remove(index));
+            k -= index * arr[i];
+        }
+        System.out.println(stringBuffer.toString());
+    }
+}
+
+13、斗地主之顺子 
+在斗地主扑克牌游戏中， 扑克牌由小到大的顺序为：3,4,5,6,7,8,9,10,J,Q,K,A,2，玩家可以出的扑克牌阵型有：单张、对子、顺子、飞机、炸弹等。
+其中顺子的出牌规则为：由至少5张由小到大连续递增的扑克牌组成，且不能包含2。
+例如：{3,4,5,6,7}、{3,4,5,6,7,8,9,10,J,Q,K,A}都是有效的顺子；而{J,Q,K,A,2}、 {2,3,4,5,6}、{3,4,5,6}、{3,4,5,6,8}等都不是顺子。
+给定一个包含13张牌的数组，如果有满足出牌规则的顺子，请输出顺子。
+如果存在多个顺子，请每行输出一个顺子，且需要按顺子的第一张牌的大小（必须从小到大）依次输出。
+如果没有满足出牌规则的顺子，请输出No。
+
+输入描述:
+13张任意顺序的扑克牌，每张扑克牌数字用空格隔开，每张扑克牌的数字都是合法的，并且不包括大小王：
+2 9 J 2 3 4 K A 7 9 A 5 6
+不需要考虑输入为异常字符的情况
+输出描述:
+组成的顺子，每张扑克牌数字用空格隔开：
+3 4 5 6 7
+
+示例1：
+输入
+2 9 J 2 3 4 K A 7 9 A 5 6
+输出
+3 4 5 6 7
+说明
+13张牌中，可以组成的顺子只有1组：3 4 5 6 7
+示例2：
+输入
+2 9 J 10 3 4 K A 7 Q A 5 6
+输出
+3 4 5 6 7
+9 10 J Q K A
+说明
+13张牌中，可以组成2组顺子，从小到大分别为：3 4 5 6 7 和 9 10 J Q K A
+示例3：
+输入
+2 9 9 9 3 4 K A 10 Q A 5 6
+输出
+No
+说明
+13张牌中，无法组成顺子
+
+答案：
+解法一：
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Main {
+
+       public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNext()) {
+            String inputPoker = scanner.nextLine();
+            String[] allPoker = inputPoker.split(" ");
+
+            Queue<Integer> sortedInput = Arrays
+                    .stream(allPoker)
+                    .filter(poker -> !poker.equals("2"))
+                    .map(poker -> {
+                        switch (poker) {
+                            case "J":
+                                return 11;
+                            case "Q":
+                                return 12;
+                            case "K":
+                                return 13;
+                            case "A":
+                                return 14;
+                            default:
+                                return Integer.parseInt(poker);
+                        }
+                    })
+                    .sorted().collect(Collectors.toCollection(LinkedList::new));
+
+
+            List<SortedBean> allSortedList = new ArrayList<>();
+            int resultCount = 0;
+            int lastValue = 0;
+            while (!sortedInput.isEmpty()) {
+                Integer currentValue = sortedInput.remove();
+
+                if (lastValue == 0) {
+                    SortedBean sortedBean = new SortedBean();
+                    sortedBean.currLastValue = currentValue;
+                    ArrayList<Integer> allData = new ArrayList<>();
+                    allData.add(currentValue);
+                    sortedBean.allData = allData;
+                    allSortedList.add(sortedBean);
+                } else {
+                    if (currentValue - lastValue == 0) {
+                        boolean isAdded = false;
+                        for (SortedBean sortedBean : allSortedList) {
+                            if (currentValue - sortedBean.currLastValue == 1) {
+                                sortedBean.currLastValue = currentValue;
+                                sortedBean.allData.add(currentValue);
+                                isAdded = true;
+                                break;
+                            }
+                        }
+
+                        if (!isAdded) {
+                            SortedBean sortedBean = new SortedBean();
+                            sortedBean.currLastValue = currentValue;
+                            ArrayList<Integer> allData = new ArrayList<>();
+                            allData.add(currentValue);
+                            sortedBean.allData = allData;
+                            allSortedList.add(sortedBean);
+                        }
+                    } else if (currentValue - lastValue == 1) {
+                        for (SortedBean sortedBean : allSortedList) {
+                            if (sortedBean.currLastValue == lastValue) {
+                                sortedBean.currLastValue = currentValue;
+                                sortedBean.allData.add(currentValue);
+                                break;
+                            }
+                        }
+                    } else {
+                        SortedBean sortedBean = new SortedBean();
+                        sortedBean.currLastValue = currentValue;
+                        ArrayList<Integer> allData = new ArrayList<>();
+                        allData.add(currentValue);
+                        sortedBean.allData = allData;
+                        allSortedList.add(sortedBean);
+                    }
+                }
+                lastValue = currentValue;
+            }
+
+            allSortedList.sort(Comparator.comparingInt(o -> o.allData.size()));
+
+            for (SortedBean sortedBean : allSortedList) {
+                if (sortedBean.allData.size() >= 5) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (Integer integer : sortedBean.allData) {
+                        stringBuilder.append(getValue(integer)).append(" ");
+                    }
+                    System.out.println(stringBuilder.substring(0, stringBuilder.length() - 1));
+                    resultCount++;
+                }
+            }
+
+
+            if (resultCount == 0) {
+                System.out.println("No");
+            }
+        }
+    }
+
+    private static String getValue(int src) {
+        switch (src) {
+            case 11:
+                return "J";
+            case 12:
+                return "Q";
+            case 13:
+                return "K";
+            case 14:
+                return "A";
+            default:
+                return src + "";
+        }
+    }
+
+    private static class SortedBean {
+        public int currLastValue;
+        private List<Integer> allData;
+
+        @Override
+        public String toString() {
+            return "SortedBean{" +
+                    "currLastValue=" + currLastValue +
+                    ", allData=" + allData +
+                    '}';
+        }
+    }
+}
+
+14、非严格递增连续数字序列 
+输入一个字符串仅包含大小写字母和数字，求字符串中包含的最长的非严格递增连续数字序列的长度（比如12234属于非严格递增连续数字序列）。
+
+输入描述:
+输入一个字符串仅包含大小写字母和数字，输入的字符串最大不超过255个字符。
+输出描述:
+最长的非严格递增连续数字序列的长度
+
+示例1：
+输入
+abc2234019A334bc
+输出
+4
+说明
+2234为最长的非严格递增连续数字序列，所以长度为4。
+
+答案：
+解法一：
+// 本题为考试单行多行输入输出规范示例，无需提交，不计分。
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        while (in.hasNext()) {// 注意，如果输入是多个测试用例，请通过while循环处理多个测试用例
+            String str = in.nextLine();
+            if (str.length()==1&&str.charAt(0)>='0'&&str.charAt(0)<='9'){
+                System.out.println(1);
+                continue;
+            }
+            boolean flag = false;
+            char[] c = str.toCharArray();
+            int size = str.length();
+            int max = 1;
+            int length = 1;
+            for (int i = 1; i < size ; i++) {
+                if ((c[i - 1] >= '0' && c[i - 1] <= '9') || (c[i] >= '0' && c[i] <= '9')) {
+                    flag = true;
+                }
+                if (c[i-1] <= c[i]&&c[i-1]>='0'&&c[i]<='9') {
+                    length++;
+                    if (length > max) {
+                        max = length;
+                    }
+                    continue;
+                } else {
+                    length = 1;
+                }
+
+            }
+            if (flag == true) {
+                System.out.println(max);
+            } else {
+                System.out.println(0);
+            }
+        }
+    }
+}
+
+14、分班 
+幼儿园两个班的小朋友在排队时混在了一起，每位小朋友都知道自己是否与前面一位小朋友是否同班，请你帮忙把同班的小朋友找出来。
+小朋友的编号为整数，与前一位小朋友同班用Y表示，不同班用N表示。
+
+输入描述:
+输入为空格分开的小朋友编号和是否同班标志。
+比如：6/N 2/Y 3/N 4/Y，表示共4位小朋友，2和6同班，3和2不同班，4和3同班。
+其中，小朋友总数不超过999，每个小朋友编号大于0，小于等于999。
+不考虑输入格式错误问题。
+
+输出描述:
+输出为两行，每一行记录一个班小朋友的编号，编号用空格分开。且：
+1、编号需要按照大小升序排列，分班记录中第一个编号小的排在第一行。
+2、若只有一个班的小朋友，第二行为空行。
+3、若输入不符合要求，则直接输出字符串ERROR。
+
+示例1：
+输入
+1/N 2/Y 3/N 4/Y
+输出
+1 2
+3 4
+说明
+2的同班标记为Y，因此和1同班。
+3的同班标记为N，因此和1、2不同班。
+4的同班标记为Y，因此和3同班。
+所以1、2同班，3、4同班，输出为
+1 2
+3 4
+
+答案：
+解法一：
+import java.util.*;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+public class Main {
+
+    public static void main(String[] args) {
+        try{
+            Scanner scan = new Scanner(System.in);
+            String in = scan.nextLine();
+            String[] a = in.split(" ");
+            ArrayList<Integer> l1 = new ArrayList<Integer>(999);
+            ArrayList<Integer> l2 = new ArrayList<Integer>(999);
+            ArrayList<Integer> l0 = null;
+            boolean same = true;
+            for (int i = a.length - 1; i >= 0; i--) {
+                Integer num = Integer.parseInt(a[i].substring(0,a[i].indexOf("/")));
+                if(num<=0||num>999){
+                    throw new Exception();
+                }
+                same = a[i].endsWith("Y");
+                if (i == a.length - 1) {
+                    l0 = l1;
+                }
+                l0.add(num);
+                if(!same){
+                    l0 = l0==l1?l2:l1;
+                }
+            }
+            Collections.sort(l1);
+            Collections.sort(l2);
+            if(new HashSet(l1).size()<l1.size()||new HashSet(l2).size()<l2.size()){
+                throw new Exception();
+            }
+            if(l2.size()!=0 && l1.get(0)>l2.get(0)){
+                System.out.println(l2.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+                System.out.println(l1.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+            }else{
+                System.out.println(l1.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+                System.out.println(l2.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+            }
+        }catch(Exception e){
+            System.out.println("ERROR");
+        }
+    }
+
+}
+
+
+15、分糖果
+小明从糖果盒中随意抓一把糖果，每次小明会取出一半的糖果分给同学们。
+当糖果不能平均分配时，小明可以选择从糖果盒中（假设盒中糖果足够）取出一个糖果或放回一个糖果。
+小明最少需要多少次（取出、放回和平均分配均记一次），能将手中糖果分至只剩一颗
+
+输入描述:
+抓取的糖果数（<10000000000）：
+15
+输出描述:
+最少分至一颗糖果的次数：
+5
+
+示例1：
+输入
+15
+输出
+5
+备注:
+解释：(1)15+1=16;(2)16/2=8;(3)8/2=4;(4)4/2=2;(5)2/2=1;
+
+答案：
+解法一:
+import java.io.InputStream;
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Scanner scanner = new Scanner(System.in);
+        long sum = scanner.nextLong();
+        System.out.println(count(sum, 0)); 
+    }
+    
+    private static int count(long sum, int count){
+        if(sum <= 1){
+            return count;
+        }
+        if(sum%2==0){
+            return count(sum/2, count + 1);
+        }
+        return Math.min(count(sum + 1, count + 1), count(sum - 1,count + 1));
+    }
+}
+
+15、高矮个子排队 
+现在有一队小朋友，他们高矮不同，我们以正整数数组表示这一队小朋友的身高，如数组{5,3,1,2,3}。
+我们现在希望小朋友排队，以“高”“矮”“高”“矮”顺序排列，每一个“高”位置的小朋友要比相邻的位置高或者相等；每一个“矮”位置的小朋友要比相邻的位置矮或者相等；
+要求小朋友们移动的距离和最小，第一个从“高”位开始排，输出最小移动距离即可。
+例如，在示范小队{5,3,1,2,3}中，{5, 1, 3, 2, 3}是排序结果。{5, 2, 3, 1, 3} 虽然也满足“高”“矮”“高”“矮”顺序排列，但小朋友们的移动距离大，所以不是最优结果。
+移动距离的定义如下所示：
+第二位小朋友移到第三位小朋友后面，移动距离为1，若移动到第四位小朋友后面，移动距离为2；
+
+输入描述:
+排序前的小朋友，以英文空格的正整数：
+4 3 5 7 8
+注：小朋友<100个
+输出描述:
+排序后的小朋友，以英文空格分割的正整数：
+4 3 7 5 8
+
+示例1：
+输入
+4 1 3 5 2
+输出
+4 1 5 2 3
+示例2：
+输入
+1 1 1 1 1
+输出
+1 1 1 1 1
+说明
+相邻位置可以相等
+示例3：
+输入
+xxx
+输出
+[ ]
+说明：
+出现非法参数情况， 返回空数组
+备注:
+4（高）3（矮）7（高）5（矮）8（高）， 输出结果为最小移动距离，只有5和7交换了位置，移动距离都是1。
+
+答案：
+解法一：
+import java.util.Scanner;
+import java.util.LinkedList;
+public class Main {
+    public static void main(String[] args) {
+       Scanner sc = new Scanner(System.in);
+        LinkedList<Integer> list = new LinkedList<Integer>();
+        try {
+            while (sc.hasNext()) {
+                list.add(Integer.valueOf(sc.next()));
+            }
+        } catch (Exception e) {
+            System.out.println("[]");
+            return;
+        }
+
+        for (int i = 0; i < list.size() - 1; i++) {
+            if (i % 2 == 0 && Integer.valueOf(list.get(i)) < Integer.valueOf(list.get(i + 1))) {
+                int tmp = list.get(i);
+                list.set(i, list.get(i + 1));
+                list.set(i + 1, tmp);
+            } else if (i % 2 == 1 && Integer.valueOf(list.get(i)) > Integer.valueOf(list.get(i + 1))) {
+                int tmp = list.get(i);
+                list.set(i, list.get(i + 1));
+                list.set(i + 1, tmp);
+            }
+            //System.out.print(str[i]);
+        }
+        for (int i = 0; i < list.size(); i++) {
+            if (i != list.size() - 1) {
+                System.out.print(list.get(i) + " ");
+            } else {
+                System.out.println(list.get(i));
+            }
+        }
+    }
+}
+
+16、工号不够用了怎么办？ 分配工号 
+3020年，空间通信集团的员工人数突破20亿人，即将遇到现有工号不够用的窘境。
+现在，请你负责调研新工号系统。继承历史传统，新的工号系统由小写英文字母（a-z）和数字（0-9）两部分构成。新工号由一段英文字母开头，之后跟随一段数字，比如"aaahw0001","a12345","abcd1","a00"。注意新工号不能全为字母或者数字,允许数字部分有前导0或者全为0。
+但是过长的工号会增加同事们的记忆成本，现在给出新工号至少需要分配的人数X和新工号中字母的长度Y，求新工号中数字的最短长度Z。
+
+输入描述:
+一行两个非负整数 X Y，用数字用单个空格分隔。
+0< X <=2^50 - 1
+0< Y <=5
+
+输出描述:
+输出新工号中数字的最短长度Z
+
+示例1
+输入
+260 1
+输出
+1
+示例2
+输入
+26 1
+输出
+1
+说明
+数字长度不能为0
+示例3
+输入
+2600 1
+输出
+2
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        long x = sc.nextLong();
+        int y = sc.nextInt();
+        int z = 1;
+        int f = (int) Math.pow(26, y);
+        while (f * Math.pow(10, z) < x) {
+            z++;
+        }
+        System.out.println(z);
+    }
+}
+
+17、勾股数元组 
+如果3个正整数(a,b,c)满足a2 + b2 = c2的关系，则称(a,b,c)为勾股数（著名的勾三股四弦五），为了探索勾股数的规律，我们定义如果勾股数(a,b,c)之间两两互质（即a与b，a与c，b与c之间均互质，没有公约数），则其为勾股数元祖（例如(3,4,5)是勾股数元祖，(6,8,10)则不是勾股数元祖）。请求出给定范围[N,M]内，所有的勾股数元祖。
+
+输入描述:
+起始范围N，1 <= N <= 10000
+结束范围M，N < M <= 10000
+输出描述:
+1.  a,b,c请保证a < b < c,输出格式：a b c；
+2.  多组勾股数元祖请按照a升序，b升序，最后c升序的方式排序输出；
+3.  给定范围中如果找不到勾股数元祖时，输出”NA”。
+
+示例1：
+输入
+1
+20
+输出
+3 4 5
+5 12 13
+8 15 17
+说明
+[1, 20]范围内勾股数有：(3 4 5)，(5 12 13)，(6 8 10)，(8 15 17)，(9 12 15)，(12 16 20)；其中，满足(a,b,c)之间两两互质的勾股数元祖有：(3 4 5)，(5 12 13)，(8 15 17)；按输出描述中顺序要求输出结果。
+示例2：
+输入
+5
+10
+输出
+NA
+说明
+[5, 10]范围内勾股数有：(6 8 10)；其中，没有满足(a,b,c)之间两两互质的勾股数元祖； 给定范围中找不到勾股数元祖，输出”NA”。
+
+答案：
+解法一：
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+
+    public static List solution(int N, int M){
+        List list = new ArrayList();
+        for(int i = N; i <= M - 2; i++){
+            for(int j = i + 1; j <= M - 1; j++){
+                double k = Math.sqrt(i * i + j * j);
+                long kk = (long)k;
+                if(k - kk == 0 && k <= M && help(i, j) && help(i, (int)(k)) && help(j, (int)(k))){
+                    list.add(new int[]{i, j, (int)k});
+                }else if(k > M){
+                    break;
+                }
+            }
+        }
+        return list;
+    }
+
+    public static boolean help(int l, int n){
+        if(l < n){
+            int temp = l;
+            l = n;
+            n = temp;
+        }
+        int p;
+        while((p = l % n) != 0){
+            l = n;
+            n = p;
+        }
+        return n == 1;
+    }
+
+    public static void main(String[] args){
+
+        Scanner scanner = new Scanner(System.in);
+        int N = scanner.nextInt();
+        int M = scanner.nextInt();
+
+        List<int[]> result = solution(N, M);
+        if(result.size() > 0){
+            for(int[] res : result){
+                System.out.println(res[0] + " " + res[1] + " " + res[2]);
+            }
+        }else{
+            System.out.println("NA");
+        }
+    }
+}
+
+18、喊7的次数重排 
+喊7是一个传统的聚会游戏，N个人围成一圈，按顺时针从1到N编号。编号为1的人从1开始喊数，下一个人喊的数字为上一个人的数字加1，但是当将要喊出来的数字是7的倍数或者数字本身含有7的话，不能把这个数字直接喊出来，而是要喊"过"。假定玩这个游戏的N个人都没有失误地在正确的时机喊了"过"，当喊到数字K时，可以统计每个人喊"过"的次数。
+
+现给定一个长度为N的数组，存储了打乱顺序的每个人喊"过"的次数，请把它还原成正确的顺序，即数组的第i个元素存储编号i的人喊"过"的次数。
+
+输入描述:
+输入为一行，为空格分隔的喊"过"的次数，注意K并不提供，K不超过200，而数字的个数即为N。
+输出描述:
+输出为一行，为顺序正确的喊"过"的次数，也由空格分隔。
+
+示例1：
+输入
+0 1 0
+输出
+1 0 0
+说明
+一共只有一次喊"过"，那只会发生在需要喊7时，按顺序，编号为1的人会遇到7，故输出1 0 0。注意，结束时的K不一定是7，也可以是8、9等，喊过的次数都是1 0 0。
+示例2：
+输入
+0 0 0 2 1
+输出
+0 2 0 1 0
+说明
+一共有三次喊"过"，发生在7 14 17，按顺序，编号为2的人会遇到7 17，编号为4的人会遇到14，故输出0 2 0 1 0。
+
+答案：
+解法一：
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String s = reader.readLine();
+        String[] s1 = s.split(" ");
+        int count = 0;
+        for (int i = 0; i < s1.length; i++) {
+            count += Integer.parseInt(s1[i]);
+        }
+        int num = 6;
+        for (int j = 0; j < count; ) {
+            num++;
+            if(num % 7 == 0 || (num+"").contains("7")){
+                j ++;
+            }
+        }
+        int[] arr = new int[s1.length];
+        for (int i = 1; i <= num; i++) {
+            if(i % 7 == 0 || (i+"").contains("7")){
+                arr[i % s1.length]++;
+            }
+        }
+        for (int i = 1; i < arr.length; i++) {
+            System.out.print(arr[i] + " ");
+        }
+        System.out.print(arr[0]);
+    }
+}
+
+19、猴子爬山
+一天一只顽猴想去从山脚爬到山顶，途中经过一个有个N个台阶的阶梯，但是这猴子有一个习惯： 每一次只能跳1步或跳3步，试问猴子通过这个阶梯有多少种不同的跳跃方式？
+
+输入描述:
+输入只有一个整数N（0<N<=50）此阶梯有多少个阶梯
+输出描述:
+输出有多少种跳跃方式（解决方案数）
+
+示例1：
+输入
+50
+输出
+122106097
+示例2：
+输入
+3
+输出
+2
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        while(sc.hasNext()){
+            int n = sc.nextInt();
+            Main m = new Main();
+            int sum = m.jump(n);
+            System.out.print(sum);
+        }
+    }
+    
+    public int jump(int n){
+        if(n==1||n==2){
+            return 1;
+        }else if(n==3){
+            return 2;
+        }else{
+            return jump(n-3)+jump(n-1);
+        }
+    }
+}
+
+20、滑动窗口最大和
+有一个N个整数的数组，和一个长度为M的窗口，窗口从数组内的第一个数开始滑动直到窗口不能滑动为止，每次窗口滑动产生一个窗口和（窗口内所有数的和），求窗口滑动产生的所有窗口和的最大值。
+
+输入描述:
+第一行输入一个正整数N，表示整数个数。(0<N<100000)
+
+第二行输入N个整数，整数的取值范围为[-100,100]。
+
+第三行输入一个正整数M，M代表窗口大小，M<=100000，且M<=N。
+输出描述:
+窗口滑动产生的所有窗口和的最大值。
+
+示例1：
+输入
+6
+10 20 30 15 23 12
+3
+输出
+68
+说明
+窗口长度为3，窗口滑动产生的窗口和分别为10+20+30=60，20+30+15=65，30+15+23=68，15+23+12=50，所以窗口滑动产生的所有窗口和的最大值为68。
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int[] array = new int[n];
+        for(int i = 0; i < n; i++){
+            array[i] = sc.nextInt();
+        } 
+        int m = sc.nextInt();
+        int sum=0;
+        for(int i=0;i<m;i++){
+            sum+=array[i];
+        }
+        int max = sum;
+        if(n>m){
+            for(int i=0;i<(n-m);i++){
+                sum += (array[m+i]-array[i]);
+                if(sum>max){
+                    max=sum;
+                }
+            }
+        }
+        System.out.println(max);
+    }
+}

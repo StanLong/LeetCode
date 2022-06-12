@@ -1,0 +1,796 @@
+
+51、素数之积 
+RSA加密算法在网络安全世界中无处不在，它利用了极大整数因数分解的困难度，数据越大，安全系数越高，给定一个32位正整数，请对其进行因数分解，找出是哪两个素数的乘积。
+
+输入描述:
+一个正整数num
+0 < num <= 2147483647
+输出描述:
+如果成功找到，以单个空格分割，从小到大输出两个素数，分解失败，请输出-1 -1
+
+示例1
+输入
+15
+输出
+3 5
+说明
+因数分解后，找到两个素数3和5，使得3*5=15，按从小到大排列后，输出3 5
+
+示例2
+输入
+27
+输出
+-1 -1
+说明
+通过因数分解，找不到任何素数，使得他们的乘积为27，输出-1 -1
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        long num = sc.nextLong();
+        long limit = (long)Math.floor(Math.sqrt(num));
+        String res = "";
+        boolean flag = false;
+        for(long i = 2;i<=limit;i++){
+            if(num%i==0){
+                if(isPrime(i)&&isPrime(num/i)){
+                    flag = true;
+                    if(i<num/i){
+                        res = i+" "+num/i;
+                    }
+                    else{
+                        res = num/i+" "+i;
+                    }
+                }
+            }
+        }
+        if(flag==true){
+            System.out.println(res);
+        }
+        else{
+            System.out.println("-1 -1");
+        }
+    }
+    
+    public static boolean isPrime(long num){
+        long limit = (long)Math.floor(Math.sqrt(num));
+        for(long i = 2;i<=limit;i++){
+            if(num%i==0) return false;
+        }
+        return true;
+    }
+    
+}
+
+52、太阳能板最大面积
+给航天器一侧加装长方形或正方形的太阳能板（图中的红色斜线区域），需要先安装两个支柱（图中的黑色竖条），再在支柱的中间部分固定太阳能板。但航天器不同位置的支柱长度不同，太阳能板的安装面积受限于最短一侧的那根支柱长度。如图：
+现提供一组整形数组的支柱高度数据，假设每根支柱间距离相等为1个单位长度，计算如何选择两根支柱可以使太阳能板的面积最大。
+
+输入描述:
+10,9,8,7,6,5,4,3,2,1
+注：支柱至少有2根，最多10000根，能支持的高度范围1~10^9的整数。柱子的高度是无序的，例子中递减只是巧合。
+输出描述:
+可以支持的最大太阳能板面积：（10米高支柱和5米高支柱之间）
+25
+
+示例1
+输入
+10,9,8,7,6,5,4,3,2,1
+输出
+25
+备注:
+10米高支柱和5米高支柱之间宽度为5，高度取小的支柱高也是5，面积为25。任取其他两根支柱所能获得的面积都小于25。所以最大的太阳能板面积为25。
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main{
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String[] strs = sc.nextLine().split(",");
+        int len = strs.length;
+        long res = 0;
+        for(int i = 0; i < len - 1; i++) {
+            for(int j = i + 1; j < len; j++) {
+                long a = Long.valueOf(strs[i]);
+                long b = Long.valueOf(strs[j]);
+                long c = j - i;
+                if (a > b){
+                    if (res < b * c)
+                    res = b * c;
+                }else{
+                    if (res < a *c)
+                    res = a * c;
+                }
+            }
+        }
+        System.out.print(res);
+    }
+}
+
+53、停车场车辆统计
+特定大小的停车场，数组cars[]表示，其中1表示有车，0表示没车。车辆大小不一，小车占一个车位（长度1），货车占两个车位（长度2），卡车占三个车位（长度3），统计停车场最少可以停多少辆车，返回具体的数目。
+
+输入描述:
+整型字符串数组cars[]，其中1表示有车，0表示没车，数组长度小于1000。
+输出描述:
+整型数字字符串，表示最少停车数目。
+
+示例1
+输入
+1,0,1
+输出
+2
+说明
+1个小车占第1个车位
+第二个车位空
+1个小车占第3个车位
+最少有两辆车
+示例2
+输入
+1,1,0,0,1,1,1,0,1
+输出
+3
+说明
+1个货车占第1、2个车位
+第3、4个车位空
+1个卡车占第5、6、7个车位
+第8个车位空
+1个小车占第9个车位
+最少3辆车
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+
+        while (scan.hasNext()) {
+            String line = scan.next();
+            if(line.split(",").length >= 1000){
+                System.out.println(0);
+                continue;
+            }
+            int result = 0;
+            String[] split = line.replaceAll(",", "").split("0+");
+            if(split != null && split.length != 0){
+                for (int i = 0; i < split.length; i++){
+
+                    String temp = split[i];
+                    if(temp.length() == 1 || temp.length() == 2 || temp.length() == 3){
+                        result ++;
+                    }else {
+                        int length = temp.length();
+                        if(length % 3 == 0){
+                            result = result + length / 3;
+                        }else {
+                            result = result + length / 3 + 1;
+                        }
+                    }
+                }
+            }
+
+            System.out.println(result);
+        }
+    }
+}
+
+54、统计射击比赛成绩
+给定一个射击比赛成绩单，包含多个选手若干次射击的成绩分数，请对每个选手按其最高3个分数之和进行降序排名，输出降序排名后的选手ID序列。条件如下：
+1、一个选手可以有多个射击成绩的分数，且次序不固定。
+2、如果一个选手成绩少于3个，则认为选手的所有成绩无效，排名忽略该选手。
+3、如果选手的成绩之和相等，则成绩之和相等的选手按照其ID降序排列。
+
+输入描述:
+输入第一行，一个整数N，表示该场比赛总共进行了N次射击，产生N个成绩分数（2<=N<=100）。
+输入第二行，一个长度为N整数序列，表示参与每次射击的选手ID（0<=ID<=99）。
+输入第三行，一个长度为N整数序列，表示参与每次射击的选手对应的成绩（0<=成绩<=100）。
+输出描述:
+符合题设条件的降序排名后的选手ID序列。
+
+示例1
+输入
+13
+3,3,7,4,4,4,4,7,7,3,5,5,5
+53,80,68,24,39,76,66,16,100,55,53,80,55
+输出
+5,3,7,4
+说明
+该场射击比赛进行了13次，参赛的选手为{3,4,5,7}。
+3号选手成绩：53,80,55，最高3个成绩的和为：80+55+53=188。
+4号选手成绩：24,39,76,66，最高3个成绩的和为：76+66+39=181。
+5号选手成绩：53,80,55，最高3个成绩的和为：80+55+53=188。
+7号选手成绩：68,16,100，最高3个成绩的和为：100+68+16=184。
+比较各个选手最高3个成绩的和，有3号=5号>7号>4号，由于3号和5号成绩相等且ID号5>3，所以输出为：5,3,7,4
+
+答案：
+解法一：
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Scanner;
+
+public class Main
+{
+	public static void main(String[] args)
+	{
+		Scanner in = new Scanner(System.in);
+		String a = in.nextLine();
+		String b = in.nextLine();
+		String[] bSplit = b.split(",");
+		String c = in.nextLine();
+		String[] cSplit = c.split(",");
+		Map<Integer, Integer> countMap = new java.util.HashMap<>();
+		Map<Integer, Integer> cjMap = new java.util.HashMap<>();
+		Map<Integer, List<Integer>> cjDataMap = new java.util.HashMap<>();
+		for (int i = 0; i < Integer.valueOf(a); i++)
+		{
+			Integer mc = Integer.valueOf(bSplit[i]);
+			Integer cj = Integer.valueOf(cSplit[i]);
+			if (countMap.containsKey(mc))
+			{
+				countMap.put(mc, countMap.get(mc) + 1);
+				// cjMap.put(mc, cjMap.get(mc) + cj);
+				List<Integer> data = cjDataMap.get(mc);
+				insertList(data, cj);
+				cjDataMap.put(mc, data);
+			} else
+			{
+				List<Integer> data = new ArrayList<>();
+				insertList(data, cj);
+				countMap.put(mc, 1);
+				// cjMap.put(mc, cj);
+				cjDataMap.put(mc, data);
+			}
+		}
+		for (Entry<Integer, List<Integer>> data : cjDataMap.entrySet())
+		{
+			if (data.getValue().size() < 3)
+			{
+				continue;
+			}
+			for (int i = 0; i < data.getValue().size(); i++)
+			{
+				if (i > 2)
+				{
+					break;
+				}
+				if (cjMap.containsKey(data.getKey()))
+				{
+					cjMap.put(data.getKey(), cjMap.get(data.getKey()) + data.getValue().get(i));
+				} else
+				{
+					cjMap.put(data.getKey(), data.getValue().get(i));
+				}
+			}
+		}
+		Map<Integer, Integer> countMapOne = new java.util.HashMap<>();
+		Map<Integer, Integer> cjMapOne = new java.util.HashMap<>();
+		List<Integer> cjList = new ArrayList<>();
+		for (Entry<Integer, Integer> count : countMap.entrySet())
+		{
+			if (count.getValue() >= 3)
+			{
+				countMapOne.put(count.getKey(), count.getValue());
+				cjMapOne.put(count.getKey(), cjMap.get(count.getKey()));
+				if (!cjList.contains(cjMap.get(count.getKey())))
+				{
+					insertList(cjList, cjMap.get(count.getKey()));
+				}
+			}
+		}
+		String ss = "";
+		for (Integer integer : cjList)
+		{
+			List<Integer> mcList = new ArrayList<>();
+			for (Entry<Integer, Integer> count : cjMapOne.entrySet())
+			{
+				if (count.getValue().toString().equals(integer.toString()))
+				{
+					insertList(mcList, count.getKey());
+				}
+			}
+			for (Integer integer2 : mcList)
+			{
+				ss += integer2 + ",";
+			}
+		}
+		System.out.println(ss.substring(0, ss.length() - 1));
+	}
+
+	private static void insertList(List<Integer> cjList, Integer integer)
+	{
+		for (int i = 0; i < cjList.size(); i++)
+		{
+			if (cjList.get(i) < integer)
+			{
+				cjList.add(i, integer);
+				break;
+			}
+			if (i == cjList.size() - 1)
+			{
+				cjList.add(integer);
+				break;
+			}
+			if (cjList.get(i) > integer && cjList.get(i + 1) < integer)
+			{
+				cjList.add(i + 1, integer);
+				break;
+			}
+		}
+		if (cjList.isEmpty())
+		{
+			cjList.add(integer);
+		}
+	}
+}
+
+
+55、完全二叉树非叶子部分后序遍历
+给定一个以顺序储存结构存储整数值的完全二叉树序列（最多1000个整数），请找出此完全二叉树的所有非叶子节点部分，然后采用后序遍历方式将此部分树（不包含叶子）输出。
+1、只有一个节点的树，此节点认定为根节点（非叶子）。
+2、此完全二叉树并非满二叉树，可能存在倒数第二层出现叶子或者无右叶子的情况
+
+其他说明：二叉树的后序遍历是基于根来说的，遍历顺序为：左-右-根
+
+输入描述:
+一个通过空格分割的整数序列字符串
+输出描述:
+非叶子部分树结构
+
+示例1
+输入
+1 2 3 4 5 6 7
+输出
+2 3 1
+说明
+找到非叶子部分树结构，然后采用后续遍历输出
+备注:
+输出数字以空格分隔
+
+答案：
+解法一：
+
+import java.util.*;
+
+/**
+ * 1. 构建二叉树
+ * 2. 剔除叶子节点
+ * 3. 后序遍历
+ * <p>
+ * 1 2 3 4 5 6 7 8 9 10 11 12
+ */
+
+public class Main {
+
+    static class Node {
+        private int val;
+        private Node left;
+        private Node right;
+
+        public Node() {
+        }
+
+        public Node(int val) {
+            this.val = val;
+        }
+
+        public Node(int val, Node left, Node right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        String[] ss = in.nextLine().split(" ");
+        for (String s : ss) {
+            queue.add(Integer.parseInt(s));
+        }
+
+        Node root = build();
+        remove(root);
+
+        List<String> p = new ArrayList<>();
+        print(root, p);
+
+        System.out.println(String.join(" ", p));
+    }
+
+    private static Queue<Integer> queue = new ArrayDeque<>();
+    private static Queue<Node> nodes = new ArrayDeque<>();
+
+    public static Node build() {
+        Node root = new Node(queue.poll());
+        nodes.add(root);
+
+        while (!nodes.isEmpty()) {
+            Node top = nodes.poll();
+
+            if (!queue.isEmpty()) {
+                Node left = new Node(queue.poll());
+                top.left = left;
+                nodes.add(left);
+            } else {
+                break;
+            }
+
+            if (!queue.isEmpty()) {
+                Node right = new Node(queue.poll());
+                top.right = right;
+                nodes.add(right);
+            } else {
+                break;
+            }
+        }
+        return root;
+    }
+
+
+    public static Node remove(Node root) {
+        if (root == null) {
+            return null;
+        }
+        if (root.left == null && root.right == null) {
+            return null;
+        }
+
+        root.left = remove(root.left);
+        root.right = remove(root.right);
+
+        return root;
+    }
+
+    public static void print(Node root, List<String> p) {
+        if (root == null) {
+            return;
+        }
+
+        print(root.left, p);
+        print(root.right, p);
+        p.add(String.valueOf(root.val));
+    }
+}
+
+
+56、玩牌高手
+给定一个长度为n的整型数组，表示一个选手在n轮内可选择的牌面分数。选手基于规则选牌，请计算所有轮结束后其可以获得的最高总分数。选择规则如下：
+1、在每轮里选手可以选择获取该轮牌面，则其总分数加上该轮牌面分数，为其新的总分数。
+2、选手也可不选择本轮牌面直接跳到下一轮，此时将当前总分数还原为3轮前的总分数，若当前轮次小于等于3（即在第1、2、3轮选择跳过轮次），则总分数置为0。
+3、选手的初始总分数为0，且必须依次参加每一轮。
+
+输入描述:
+第一行为一个小写逗号分割的字符串，表示n轮的牌面分数，1<= n <=20。
+分数值为整数，-100 <= 分数值 <= 100。
+不考虑格式问题。
+输出描述:
+所有轮结束后选手获得的最高总分数。
+
+示例1
+输入
+1,-5,-6,4,3,6,-2
+输出
+11
+说明
+总共有7轮牌面。
+第一轮选择该轮牌面，总分数为1。
+第二轮不选择该轮牌面，总分数还原为0。
+第三轮不选择该轮牌面，总分数还原为0。
+第四轮选择该轮牌面，总分数为4。
+第五轮选择该轮牌面，总分数为7。
+第六轮选择该轮牌面，总分数为13。
+第七轮如果不选择该轮牌面，则总分数还原到3轮1前分数，即第四轮的总分数4，如果选择该轮牌面，总分数为11，所以选择该轮牌面。
+因此，最终的最高总分为11。
+
+答案：
+解法一：
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        testAdd();
+    }
+
+    public static void testAdd(){
+        //1,-5,-6,4,3,6,-2
+        Scanner scan = new Scanner(System.in);
+        while (scan.hasNext()) {// 注意，如果输入是多个测试用例，请通过while循环处理多个测试用例
+            String str = scan.nextLine();
+            if(str != null){
+                String[] split = str.split(",");
+                int num = 0;
+                int[] ints = new int[split.length];
+                for (int i = 0; i < split.length; i++) {
+                    int var = Integer.parseInt(split[i]);
+                    //前三位数 负数的话不加
+                     if(i < 3){
+                        num += var;
+                        if(num < 0){
+                            num  = 0;
+                        }
+                    }else{
+                        //判断是否要弃权
+                        int anInt = ints[i - 3];//前三轮总分数是
+                        if(anInt > (num + var)){
+                            num = anInt;
+                        }else{
+                            num += var;
+                        }
+                    }
+                    ints[i] = num;//记录每轮的总分数
+                }
+                if(ints.length > 0){
+                    if(split.length >= 20){
+                        System.out.println(ints[19]);
+                    }else {
+                        System.out.println(ints[split.length - 1]);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+57、相对开音节 
+相对开音节构成的结构为辅音+元音（aeiou）+辅音(r除外)+e，常见的单词有bike、cake等。
+
+给定一个字符串，以空格为分隔符，反转每个单词中的字母，若单词中包含如数字等其他非字母时不进行反转。
+反转后计算其中含有相对开音节结构的子串个数（连续的子串中部分字符可以重复）。
+
+输入描述:
+字符串，以空格分割的多个单词，字符串长度<10000，字母只考虑小写
+输出描述:
+含有相对开音节结构的子串个数，注：个数<10000
+
+示例1
+输入
+ekam a ekac
+输出
+2
+说明
+反转后为 make a cake 其中make、cake为相对开音节子串，返回2
+示例2
+输入
+!ekam a ekekac
+输出
+2
+说明
+反转后为!ekam a cakeke 因!ekam含非英文字符所以未反转，其中 cake、keke为相对开音节子串，返回2
+
+答案：
+解法一：
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while(sc.hasNextLine()) {
+            String[] temp = sc.nextLine().split("\\s+");
+            System.out.println(handle(temp));
+        }
+        sc.close();
+    }
+    public static int getCount(String str) {
+        if (str.length() < 4) {
+            return 0;
+        }
+        int val = 0;
+        if (!zimu(str)) {
+            for (int i = 0; i <= str.length() - 4; i++) {
+                if (check(str.charAt(i), str.charAt(i + 1), str.charAt(i + 2), str.charAt(i + 3))) {
+                    val++;
+                }
+            }
+        } else {
+            for (int i = str.length() - 1; i > 2; i--) {
+                if (check(str.charAt(i), str.charAt(i - 1), str.charAt(i - 2), str.charAt(i - 3))) {
+                    val++;
+                }
+            }
+        }
+        return val;
+    }
+    public static boolean check(char c1, char c2, char c3, char c4) {
+        if (c4 != 'e') {
+            return false;
+        }
+        if (c2 != 'a' && c2 != 'e' && c2 != 'i' && c2 != 'o' && c2 != 'u') {
+            return false;
+        }
+        if (c1 == 'a' || c1 == 'e' || c1 == 'i' || c1 == 'o' || c1 == 'u') {
+            return false;
+        }
+        if (!('a' <= c1 && c1 <= 'z')) {
+            return false;
+        }
+        if (c3 == 'a' || c3 == 'e' || c3 == 'i' || c3 == 'o' || c3 == 'u' || c3 == 'r') {
+            return false;
+        }
+        if (!('a' <= c3 && c3 <= 'z')) {
+            return false;
+        }
+        return true;
+    }
+    public static int handle(String[] temp) {
+        int count = 0;
+        for (int i = 0; i < temp.length; i++) {
+            count += getCount(temp[i]);
+        }
+        return count;
+    }
+    public static boolean zimu(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (!('a' <= c && c <= 'z')) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+58、消消乐游戏
+游戏规则：输入一个只包含英文字母的字符串，字符串中的两个字母如果相邻且相同，就可以消除。
+
+在字符串上反复执行消除的动作，直到无法继续消除为止，此时游戏结束。
+输出最终得到的字符串长度。
+
+输入描述:
+输入原始字符串 str ，只能包含大小写英文字母，字母的大小写敏感， str 长度不超过100。
+
+输出描述:
+输出游戏结束后，最终得到的字符串长度
+
+示例1
+输入
+gg
+输出
+0
+说明
+gg 可以直接消除，得到空串，长度为0
+示例2
+输入
+mMbccbc
+输出
+3
+说明
+在 mMbccbc 中，可以先消除 cc ；此时字符串变成 mMbbc ，可以再消除 bb ；此时字符串变成 mMc ，此时没有相邻且相同的字符，无法继续消除。最终得到的字符串为 mMc ，长度为3
+备注:
+输入中包含 非大小写英文字母 时，均为异常输入，直接返回 0
+
+答案：
+解法一：
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Stack;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        String a = in.nextLine();
+        char[] str = a.toCharArray();
+        Stack<Character> stack = new Stack<Character>();
+        boolean flag = true;
+        for(int i=0;i<str.length;i++){
+                String sss = String.valueOf(str[i]).toLowerCase();
+                char ssss = sss.charAt(0);
+                if((ssss < 'a' || ssss > 'z')){
+                    System.out.println(0);
+                    flag = false;
+                    break;
+                }
+                if(stack.size()>0 && str[i] == stack.peek()){
+                    stack.pop();
+                }else{
+                    stack.push(str[i]);
+                }
+        }
+        if(flag){
+            System.out.println(stack.size());
+        }
+    }
+}
+
+59、寻找身高相近的小朋友
+小明今年升学到小学一年级，来到新班级后发现其他小朋友们身高参差不齐，然后就想基于各小朋友和自己的身高差对他们进行排序，请帮他实现排序。
+
+输入描述:
+第一行为正整数H和N，0<H<200，为小明的身高，0<N<50，为新班级其他小朋友个数。
+第二行为N个正整数H1-HN，分别是其他小朋友的身高，取值范围0<Hi<200（1<=i<=N），且N个正整数各不相同。
+输出描述:
+输出排序结果，各正整数以空格分割。和小明身高差绝对值最小的小朋友排在前面，和小明身高差绝对值最大的小朋友排在最后，如果两个小朋友和小明身高差一样，则个子较小的小朋友排在前面。
+
+示例1
+输入
+100 10
+95 96 97 98 99 101 102 103 104 105
+输出
+99 101 98 102 97 103 96 104 95 105
+说明
+小明身高100，班级学生10个，身高分别为95 96 97 98 99 101 102 103 104 105，按身高差排序后结果为：99 101 98 102 97 103 96 104 95 105。
+
+答案：
+解法一：
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class Main{
+	public static void main(String [] args) throws Exception{
+	    Scanner scan = new Scanner(System.in);
+	    while(scan.hasNextInt()){
+	    	int height = scan.nextInt();
+	    	int nums = scan.nextInt();
+	    	Map <Integer,Integer> map =new HashMap();
+	    	int max=0;
+	    	for(int i=0;i<nums;i++){
+	    		int otherHeight = scan.nextInt();
+           
+	    		int cha = otherHeight-height;
+	    		max = Math.max(Math.abs(cha), max);
+	    		map.put(cha, otherHeight);
+	    	}
+	    	for(int m=0;m <=max;m++){
+                if(m==0){
+                    if(map.get(0)!=null)
+		    		    System.out.print(map.get(m)+" ");
+		    		continue;
+		    	}
+	    		if(map.get(0-m)!=null){
+	    			System.out.print(map.get(0-m)+" ");
+	    		}
+	    		if(map.get(m)!=null){
+	    			System.out.print(map.get(m)+" ");
+	    		}
+	    	}
+	    }
+	 }
+}
+
+
+60、寻找相同子串
+给你两个字符串 t 和 p ，要求从 t 中找到一个和 p 相同的连续子串，并输出该字串第一个字符的下标。
+
+输入描述:
+输入文件包括两行，分别表示字符串 t 和 p ，保证 t 的长度不小于 p ，且 t 的长度不超过1000000，p 的长度不超过10000。
+输出描述:
+如果能从 t 中找到一个和 p 相等的连续子串，则输出该子串第一个字符在t中的下标（下标从左到右依次为1,2,3,…）；如果不能则输出”No”；如果含有多个这样的子串，则输出第一个字符下标最小的。
+
+示例1
+输入
+AVERDXIVYERDIAN
+RDXI
+输出
+4
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String []args){
+        Scanner sc = new Scanner(System.in);
+        String t = sc.nextLine();
+        String p = sc.nextLine();
+        int index = t.indexOf(p);
+        
+        if(index == -1){
+            System.out.println("No");
+        }else{
+            System.out.println(index + 1);
+        }
+    }
+}

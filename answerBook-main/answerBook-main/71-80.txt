@@ -1,0 +1,637 @@
+
+71、执行时长
+为了充分发挥GPU算力，需要尽可能多的将任务交给GPU执行，现在有一个任务数组，数组元素表示在这1秒内新增的任务个数且每秒都有新增任务，假设GPU最多一次执行n个任务，一次执行耗时1秒，在保证GPU不空闲情况下，最少需要多长时间执行完成
+
+输入描述:
+第一个参数为GPU一次最多执行的任务个数，取值范围[1, 10000]
+第二个参数为任务数组长度，取值范围[1, 10000]
+第三个参数为任务数组，数字范围[1, 10000]
+
+输出描述:
+执行完所有任务最少需要多少秒
+
+示例1
+输入
+3
+5
+1 2 3 4 5
+输出
+6
+说明
+一次最多执行3个任务，最少耗时6s
+示例2
+输入
+4
+5
+5 4 1 1 1
+输出
+5
+说明
+一次最多执行4个任务，最少耗时5s
+
+答案：
+解法一：
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        while (s.hasNextInt()) {
+        	int max = s.nextInt();
+        	int count = s.nextInt();
+        	List<Integer> list = new ArrayList<Integer>();
+        	for (int i = 0; i < count; i++) {
+        		list.add(s.nextInt());
+        	}
+            compute(list, max);
+       }
+       s.close();
+    }
+    static void compute (List<Integer> list, int max) {
+    	int sum = 0;
+    	int time = list.size();
+    	for (int i = 0; i < list.size(); i++) {
+    		sum += list.get(i);
+    		if (sum >= max) {
+    			sum = sum - max;
+    		} else {
+    			sum = 0;
+    		}
+    	}
+    	if (sum == 0) {
+    		System.out.println(time);
+    	} else {
+    		if (sum%max == 0) {
+    			time += sum/max;
+    			System.out.println(time);
+    		} else {
+    			time += (sum/max + 1);
+    			System.out.println(time);
+    		}
+    	}
+    }
+}
+
+72、字符串变换最小字符串 
+给定一个字符串s，最多只能进行一次变换，返回变换后能得到的最小字符串（按照字典序进行比较）。
+变换规则：交换字符串中任意两个不同位置的字符。
+
+输入描述:
+一串小写字母组成的字符串s
+输出描述:
+按照要求进行变换得到的最小字符串
+
+示例1
+输入
+abcdef
+输出
+abcdef
+说明
+abcdef已经是最小字符串，不需要交换
+示例2
+输入
+bcdefa
+输出
+acdefb
+说明
+a和b进行位置交换，可以等到最小字符串
+备注:
+s是都是小写字符组成
+1<=s.length<=1000
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+	public static void main(String[] args) {
+		Scanner scan = new Scanner(System.in);
+		String str = scan.next();
+		if (str == null || str.isEmpty()) {
+			return;
+		}
+		char[] charArray = str.toCharArray();
+		int minIndex = 0;
+		int minCharValue = Integer.valueOf(charArray[0]);
+		for (int i = 0; i < charArray.length; i++) {
+			int charValue = Integer.valueOf(charArray[i]);
+			if (charValue <= minCharValue) {
+				minCharValue = charValue;
+				minIndex = i;
+			}
+		}
+		if (minIndex == 0) {
+			System.out.println(str);
+		} else {
+			char temp = charArray[0];
+			charArray[0] = charArray[minIndex];
+			charArray[minIndex] = temp;
+			System.out.println(String.valueOf(charArray));
+		}
+	}
+
+}
+
+73、字符串分割 分割字符串
+给定一个非空字符串S，其被N个‘-’分隔成N+1的子串，给定正整数K，要求除第一个子串外，其余的子串每K个字符组成新的子串，并用‘-’分隔。对于新组成的每一个子串，如果它含有的小写字母比大写字母多，则将这个子串的所有大写字母转换为小写字母；反之，如果它含有的大写字母比小写字母多，则将这个子串的所有小写字母转换为大写字母；大小写字母的数量相等时，不做转换。
+
+输入描述:
+输入为两行，第一行为参数K，第二行为字符串S。
+输出描述:
+输出转换后的字符串。
+
+示例1
+输入
+3
+12abc-abCABc-4aB@
+输出
+12abc-abc-ABC-4aB-@
+说明
+子串为12abc、abCABc、4aB@，第一个子串保留，后面的子串每3个字符一组为abC、ABc、4aB、@，abC中小写字母较多，转换为abc，ABc中大写字母较多，转换为ABC，4aB中大小写字母都为1个，不做转换，@中没有字母，连起来即12abc-abc-ABC-4aB-@
+示例2
+输入
+12
+12abc-abCABc-4aB@
+输出
+12abc-abCABc4aB@
+说明
+子串为12abc、abCABc、4aB@，第一个子串保留，后面的子串每12个字符一组为abCABc4aB@，这个子串中大小写字母都为4个，不做转换，连起来即12abc-abCABc4aB@
+
+答案：
+解法一：
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+public class Main {
+  public static void main(String[] args) {
+
+        Scanner in = new Scanner(System.in);
+        while (in.hasNextInt()) {
+            int k = in.nextInt();
+            String s = in.next();
+            char[] chars = s.toCharArray();
+
+            int indexOfOne = s.indexOf("-");
+            List<String> resList = new ArrayList<>();
+            resList.add(s.substring(0, indexOfOne));
+
+            StringBuilder tmp = new StringBuilder();
+            int up = 0;
+            int low = 0;
+            int length = 0;
+            for (int i = indexOfOne; i < chars.length; i++) {
+                char c = chars[i];
+                if ('A' <= c && c <= 'Z') {
+                    up += 1;
+                    tmp.append(c);
+                    length += 1;
+                } else if ('a' <= c && c <= 'z'){
+                    low += 1;
+                    tmp.append(c);
+                    length += 1;
+                } else if (c != '-') {
+                    tmp.append(c);
+                    length += 1;
+                }
+                if (length == k || chars.length -1 == i) {
+                    String str = tmp.toString();
+                    if (up > low) {
+                        resList.add(str.toUpperCase());
+                    } else if (up < low) {
+                        resList.add(str.toLowerCase());
+                    } else {
+                        resList.add(str);
+                    }
+                    tmp.delete(0,length);
+                    up = 0;
+                    low = 0;
+                    length = 0;
+                }
+            }
+            System.out.println(String.join("-",resList));
+        }
+    }
+}
+
+74、字符串加密 加密电报
+给你一串未加密的字符串str，通过对字符串的每一个字母进行改变来实现加密，加密方式是在每一个字母str[i]偏移特定数组元素a[i]的量，数组a前三位已经赋值：a[0]=1,a[1]=2,a[2]=4。当i>=3时，数组元素a[i]=a[i-1]+a[i-2]+a[i-3]，
+例如：原文 abcde 加密后 bdgkr，其中偏移量分别是1,2,4,7,13。
+
+输入描述:
+第一行为一个整数n（1<=n<=1000），表示有n组测试数据，每组数据包含一行，原文str（只含有小写字母，0<长度<=50）。
+
+输出描述:
+每组测试数据输出一行，表示字符串的密文
+
+示例1
+输入
+1
+xy
+输出
+ya
+说明
+第一个字符x偏移量是1，即为y，第二个字符y偏移量是2，即为a
+示例2
+输入
+2
+xy
+abcde
+输出
+ya
+bdgkr
+说明
+第二行输出字符偏移量分别为1、2、4、7、13
+备注:
+解答要求
+
+时间限制：2000ms,内存限制：64MB
+
+75、字符串筛选排序
+输入一个由n个大小写字母组成的字符串，按照Ascii码值从小到大的排序规则，查找字符串中第k个最小ascii码值的字母（k>=1），输出该字母所在字符串的位置索引(字符串的第一个字符位置索引为0）。
+k如果大于字符串长度，则输出最大ascii值的字母所在字符串的位置索引，如果有重复的字母，则输出字母的最小位置索引。
+
+输入描述:
+第一行输入一个由大小写字母组成的字符串
+第二行输入k，k必须大于0，k可以大于输入字符串的长度
+输出描述:
+输出字符串中第k个最小ascii码值的字母所在字符串的位置索引。k如果大于字符串长度，则输出最大ascii值的字母所在字符串的位置索引，如果第k个最小ascii码值的字母存在重复，则输出该字母的最小位置索引。
+
+示例1
+输入
+AbCdeFG
+3
+输出
+5
+说明
+根据ascii码值排序，第3个最小ascii码值的字母为F，F在字符串中的位置索引为5（0为字符串的第一个字母位置索引）
+示例2
+输入
+fAdDAkBbBq
+4
+输出
+6
+说明
+根据ascii码值排序，前4个字母为AABB ，由于B重复，则只取B的（第一个）最小位置索引6 ，而不是第二个B的位置索引8
+
+答案：
+解法一：
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args){
+        Scanner in = new Scanner(System.in);
+        while (in.hasNext()){
+            String item = in.nextLine();
+            int k = Integer.parseInt(in.nextLine());
+            char[] arrs = item.toCharArray();
+            Arrays.sort(arrs);
+           if(k>arrs.length){
+               char max = arrs[arrs.length-1];
+               System.out.println(item.indexOf(max));
+           }else{
+              char max = arrs[k-1];
+              System.out.println(item.indexOf(max));
+           }
+        }
+    }
+}
+
+
+76、字符串统计 
+给定两个字符集合，一个为全量字符集，一个为已占用字符集。已占用的字符集中的字符不能再使用，要求输出剩余可用字符集。
+
+输入描述:
+1、输入为一个字符串，一定包含@符号。@前的为全量字符集，@后的字为已占用字符集。
+2、已占用字符集中的字符一定是全量字符集中的字符。字符集中的字符跟字符之间使用英文逗号分隔。
+3、每个字符都表示为字符加数字的形式，用英文冒号分隔，比如a:1，表示1个a字符。
+4、字符只考虑英文字母，区分大小写，数字只考虑正整形，数量不超过100。
+5、如果一个字符都没被占用，@标识仍然存在，例如a:3,b:5,c:2@
+输出描述:
+输出可用字符集，不同的输出字符集之间回车换行。
+注意，输出的字符顺序要跟输入一致。不能输出b:3,a:2,c:2
+如果某个字符已全被占用，不需要再输出。
+
+示例1
+输入
+a:3,b:5,c:2@a:1,b:2
+输出
+a:2,b:3,c:2
+说明
+全量字符集为3个a，5个b，2个c。
+已占用字符集为1个a，2个b。
+由于已占用字符不能再使用，因此，剩余可用字符为2个a，3个b，2个c。
+因此输出a:2,b:3,c:2
+
+答案：
+解法一：
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        while (in.hasNext()) {// 注意，如果输入是多个测试用例，请通过while循环处理多个测试用例
+            String a = in.nextLine();
+            String[] s = a.split("@");
+            String[] pre = s[0].split(",");
+
+            if(s.length >1) {
+                LinkedHashMap<String, Integer> map = new LinkedHashMap();
+                for (String temp : pre) {
+                    String[] temp2 = temp.split(":");
+                    map.putIfAbsent(temp2[0], (Integer) map.getOrDefault(temp2[0], 0) + Integer.valueOf(temp2[1]));
+                }
+                String[] end = s[1].split(",");
+                for (String temp : end) {
+                    String[] temp2 = temp.split(":");
+                    map.put(temp2[0],  map.get(temp2[0]) - Integer.valueOf(temp2[1]));
+                }
+                StringBuilder stringBuilder = new StringBuilder();
+                map.entrySet().forEach(f-> {
+                    Map.Entry entry = ( Map.Entry)f;
+                    if(f.getValue()>0) {
+                        stringBuilder.append(entry.getKey()+":"+ entry.getValue());
+                        stringBuilder.append(",");
+                    }
+                });
+                if(stringBuilder.length()>0)
+                stringBuilder.delete(stringBuilder.lastIndexOf(","),stringBuilder.length());
+                System.out.println(stringBuilder.toString());
+            } else {
+                System.out.println(s[0]);
+            }
+        }
+    }
+}
+
+77、字符串序列判定 判定字符串序列
+输入两个字符串S和L，都只包含英文小写字母。S长度<=100，L长度<=500,000。判定S是否是L的有效字串。
+
+判定规则：S中的每个字符在L中都能找到（可以不连续），且S在Ｌ中字符的前后顺序与S中顺序要保持一致。（例如，S="ace"是L="abcde"的一个子序列且有效字符是a、c、e，而"aec"不是有效子序列，且有效字符只有a、e）
+
+输入描述:
+输入两个字符串S和L，都只包含英文小写字母。S长度<=100，L长度<=500,000。
+先输入S，再输入L，每个字符串占一行。
+
+输出描述:
+S串最后一个有效字符在L中的位置。（首位从0开始计算，无有效字符返回-1）
+
+示例1
+输入
+ace
+abcde
+输出
+4
+示例2
+输入
+fgh
+abcde
+输出
+-1
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scin = new Scanner(System.in);
+        while(scin.hasNextLine()){
+            String S=scin.nextLine();
+            String L=scin.nextLine();
+            System.out.println(loIndex(S,L));
+        }
+    }
+    private static int loIndex(String S,String L){
+        int lastIndex=-1;
+        for (int i=0;i<S.length();i++){
+            boolean isFind=false;
+            for(int j=lastIndex+1;j<L.length();j++){
+                if(S.charAt(i)==L.charAt(j)){
+                    // 更新坐标
+                    lastIndex=j;
+                    isFind=true;
+                    break;
+                }
+            }
+            if(!isFind){
+                return lastIndex;
+            }
+        }
+        return lastIndex;
+    }
+}
+
+78、字符统计及重排
+给出一个仅包含字母的字符串，不包含空格，统计字符串中各个字母（区分大小写）出现的次数，并按照字母出现次数从大到小的顺序输出各个字母及其出现次数。如果次数相同，按照自然顺序进行排序，且小写字母在大写字母之前。
+
+输入描述:
+输入一行，为一个仅包含字母的字符串。
+输出描述:
+按照字母出现次数从大到小的顺序输出各个字母和字母次数，用英文分号分隔，注意末尾的分号；字母和次数间用英文冒号分隔。
+
+示例1
+输入
+xyxyXX
+输出
+x:2;y:2;X:2;
+说明
+每个字符出现的个数都是2，故x排在y之前，而小写字母x在X之前
+示例2
+输入
+abababb
+输出
+b:4;a:3;
+说明
+b的出现个数比a多，故b排在a之前
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String str = sc.nextLine();
+        int[] a = new int[256];
+        for (int i = 0; i < str.length(); i ++) {
+            a[str.charAt(i)] ++;
+        }
+        int max = 0;
+        for (int i : a) {
+            max = Math.max(i ,max);
+        }
+        for (int i = max; i > 0; i --) {
+            for (int j = 97; j < 123; j ++) {
+                if (a[j] == i) {
+                    System.out.print((char)j);
+                    System.out.print(":");
+                    System.out.print(i);
+                    System.out.print(";");
+                }
+            }
+            for (int j = 65; j < 91; j ++) {
+                if (a[j] == i) {
+                    System.out.print((char)j);
+                    System.out.print(":");
+                    System.out.print(i);
+                    System.out.print(";");
+                }
+            }
+        }
+    }
+}
+
+
+79、组成最大数 
+小组中每位都有一张卡片，卡片上是6位内的正整数，将卡片连起来可以组成多种数字，计算组成的最大数字。
+
+输入描述:
+“,”号分割的多个正整数字符串，不需要考虑非数字异常情况，小组最多25个人
+输出描述:
+最大的数字字符串
+
+示例1
+输入
+22,221
+输出
+22221
+示例2
+输入
+4589,101,41425,9999
+输出
+9999458941425101
+
+答案：
+解法一：
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String str = scanner.nextLine();
+        String[] s = str.split(",");
+        String sum = "";
+        for (int i = 0; i < s.length-1; i++) {
+            for (int j = i+1; j < s.length ; j++) {
+                String s1 = s[i].length() >= s[j].length() ? s[i] : s[j];
+                String s2 = s[i].length() < s[j].length() ? s[i] : s[j];
+                for (int k = 0; k < s2.length(); k++) {
+                    if ((k == s2.length() - 1) && (s1.charAt(k) == s2.charAt(k))) {
+                        if (k == s1.length() - 1) {
+                            break;
+                        } else if ((s1.charAt(k + 1) < s2.charAt(0))) {
+                            String s3 = s1;
+                            s1 = s2;
+                            s2 = s3;
+                            break;
+                        }
+                    } else {
+                        if (s1.charAt(k) < s2.charAt(k)) {
+                            String s3 = s1;
+                            s1 = s2;
+                            s2 = s3;
+                            break;
+                        }else if (s1.charAt(k) > s2.charAt(k)) {
+                            break;
+                        }
+                    }
+                }
+                s[i]=s1;
+                s[j]=s2;
+            }
+        }
+        for (int i = 0; i <s.length ; i++) {
+            sum+=s[i];
+        }
+        System.out.println(sum);
+    }
+}
+
+
+80、最大N个数与最小N个数的和 
+给定一个数组，编写一个函数来计算它的最大N个数与最小N个数的和。你需要对数组进行去重。
+
+
+说明：
+       *数组中数字范围[0, 1000]
+       *最大N个数与最小N个数不能有重叠，如有重叠，输入非法返回-1
+*输入非法返回-1
+
+输入描述:
+第一行输入M， M标识数组大小
+第二行输入M个数，标识数组内容
+第三行输入N，N表达需要计算的最大、最小N个数
+输出描述:
+输出最大N个数与最小N个数的和。
+
+示例1
+输入
+5
+95 88 83 64 100
+2
+输出
+342
+说明
+最大2个数[100,95],最小2个数[83,64], 输出为342
+示例2
+输入
+5
+3 2 3 4 2
+2
+输出
+-1
+说明
+最大2个数[4,3],最小2个数[3,2], 有重叠输出为-1
+
+答案：
+解法一：
+import java.util.Scanner;
+import java.util.TreeSet;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int size = scanner.nextInt();
+        if (size < 2) {
+            System.out.println(-1);
+            return;
+        }
+        int[] array = new int[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = scanner.nextInt();
+        }
+        int length = scanner.nextInt();
+
+        if (length < 0 || length > size / 2) {
+            System.out.println(-1);
+            return;
+        }
+
+        // sort
+        TreeSet<Integer> set = new TreeSet<>();
+        for (int i = 0; i < size; i++) {
+            set.add(array[i]);
+        }
+
+        int newSize = set.size();
+        if (length > newSize / 2) {
+            System.out.println(-1);
+            return;
+        }
+
+        Object[] newArray = set.toArray();
+        int result = 0;
+        for (int i = 0; i < length; i++) {
+            result += (int) newArray[i] + (int) newArray[newSize - 1 - i];
+        }
+        System.out.println(result);
+    }
+}
