@@ -47,3 +47,66 @@ da pian zi
 第7行c为其它值，输出"da pian zi"
 ```
 
+```java
+package com.stanlong.leetcode;
+
+import java.io.BufferedInputStream;
+import java.util.*;
+
+/**
+ * We Are A Team
+ */
+public class LeetCode {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(new BufferedInputStream(System.in));
+        int n = scanner.nextInt();
+        int m = scanner.nextInt();
+        int[][] matrix = new int[m][3];
+        for(int i=0; i< matrix.length; i++){
+            for(int j=0; j<3; j++){
+                matrix[i][j] = scanner.nextInt();
+            }
+        }
+
+        Map<Integer, HashSet<Integer>> map = new HashMap<>();
+        for(int i=0; i< matrix.length; i++){
+            int a = matrix[i][0];
+            int b = matrix[i][1];
+            int c = matrix[i][2];
+
+            switch (c){
+                case 0:
+                    if(!map.containsKey(a) && !map.containsKey(b)){
+                        HashSet<Integer> set = new HashSet<>();
+                        set.add(a);
+                        set.add(b);
+                        map.put(a, set);
+                        map.put(b, set);
+                    }else if(map.containsKey(a)){
+                        HashSet<Integer> set = map.get(a);
+                        set.add(b);
+                        map.put(b, set);
+                    }else if(map.containsKey(b)){
+                        HashSet<Integer> set = map.get(b);
+                        set.add(a);
+                        map.put(a, set);
+                    }
+                    break;
+                case 1:
+                    if(!map.containsKey(a) && !map.containsKey(b)){
+                        System.out.println("we are not a team");
+                    }else if(map.containsKey(a)){
+                        System.out.println(map.get(a).contains(b)?"we are a team":"we are not a team");
+                    }else if(map.containsKey(b)){
+                        System.out.println(map.get(b).contains(a)?"we are a team":"we are not a team");
+                    }
+                    break;
+                default:
+                    System.out.println("da pian zi");
+            }
+
+        }
+    }
+}
+```
+
