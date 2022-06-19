@@ -55,3 +55,38 @@ public class LeetCode {
 }
 ```
 
+```java
+package com.stanlong.leetcode;
+
+import java.util.Scanner;
+
+/**
+ * 猴子爬山
+ * 采用动态规划
+ * 状态转移方程为： dp[n] = dp[n-1] + dp[n-3]
+ * 确定初始状态：
+ * n=1时，只有一种跳法
+ * n=2时，也只有一种
+ * n=3时，就有两种跳法，一级一级跳或者一下跳到第三级
+ */
+public class LeetCode {
+
+    public static void main(String[] args) throws Exception {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        if(n<3){
+            System.out.println(1);
+            return;
+        }
+        int[] dp = new int[n+1];
+        dp[0] = 1;
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i < n; i++) {
+            dp[i] = dp[i-1] + dp[i-3];
+        }
+        System.out.println(dp[n-1]);
+    }
+}
+```
+
